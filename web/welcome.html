@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AniShelter Server</title>
+        <meta charset="utf-8">
+        <script type="text/javascript" src="resources/js/c13f37b67e.js"></script>
+        <script type="text/javascript" src="resources/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="resources/js/semantic.js"></script>
+        <link rel="stylesheet" type="text/css" href="resources/css/semantic.css">
+    </head>
+
+    <body>
+        <div class="ui icon message">
+            <i class="notched circle loading icon"></i>
+            <div class="content">
+                <div class="header">
+                   Server is working!
+                </div>
+                <p>Yeah!</p>
+            </div>
+        </div>
+        <img id="avatar" src="">
+        <!--<button onclick="myFunction()">Try it</button>-->
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $.ajax({
+                    url:'/files',
+                    method: 'POST',
+                    data: JSON.stringify({ 'path': 'E:\\file\\images\\Putin.jpg'}),
+//                    ContentType: 'application/json',
+                        charset:'UTF-8',
+                        success: function(base64String) {
+
+                            document.getElementById("avatar").src = "data:image/png;base64,"+base64String;
+                        }
+                    });
+            });
+        </script>
+    </body>
+</html>
