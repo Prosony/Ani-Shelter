@@ -1,24 +1,22 @@
 package servlet.file;
 
 
-import com.google.gson.Gson;
+import com.google.gson.*;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import services.FileService;
 import services.other.OtherService;
-import test.CheckProperties;
 import services.json.JsonHandler;
 import test.TestLog;
 /**
  * @author Prosony
- * @since 0.2.4
+ * @since 0.0.1
  */
 
-import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
 
 @WebServlet("/files")
 public class FileServlet extends HttpServlet {
@@ -31,15 +29,53 @@ public class FileServlet extends HttpServlet {
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         testLog.sendToConsoleMessage("#TEST [class FileServlet] jsonObject.toJSONString(): "+ jsonObject.toJSONString());
-        String path = (String) jsonObject.get("path");
+        JSONArray path = (JSONArray) jsonObject.get("path");
 
         if (path != null && !path.isEmpty()){
 
-            otherService.answerToClient(response,new Gson().toJson(new String(new FileService().getFileByPath(path))));
+            System.out.println("#TEST [class FileServlet] gson: "+path.get(0)+ " size:"+path.size());
+            JSONArray base64image = new JSONArray();
+            FileService service = new FileService();
+            int index = 0;
+
+            for (Object aPath : path) {
+                System.out.println("#TEST [class FileServlet] index: "+index+" aPath: "+aPath.toString());
+                base64image.add(new String(service.getFileByPath(aPath.toString())));
+                index++;
+            }
+            for (Object base64: base64image){
+                System.out.println("#TEST [class FileServlet] base64: "+base64);
+            }
+            if (!base64image.isEmpty()){
+
+                otherService.answerToClient(response, new Gson().toJson(base64image));
+            }else{
+                testLog.sendToConsoleMessage("#TEST [class FileServlet] file not found");
+                otherService.errorToClient(response,204);
+            }
         }else{
             testLog.sendToConsoleMessage("#TEST [class FileServlet] path is empty");
             otherService.errorToClient(response,400);
         }
+
+        //
+//            System.out.println(user);
+//        }
+//        JsonParser parser = new JsonParser();
+//        JsonObject mainObject = parser.parse(path).getAsJsonObject();
+//        JsonArray pItem = mainObject.getAsJsonArray("path");
+
+//        for (JsonElement user : pItem) {
+//
+//            System.out.println(user);
+//        }
+//        if (path != null && !path.isEmpty()){
+//
+//            otherService.answerToClient(response,new Gson().toJson(new String(new FileService().getFileByPath(path))));
+//        }else{
+//            testLog.sendToConsoleMessage("#TEST [class FileServlet] path is empty");
+//            otherService.errorToClient(response,400);
+//        }
 
     }
 

@@ -19,19 +19,26 @@
                 <p>Yeah!</p>
             </div>
         </div>
-        <img id="avatar" src="">
+        <img id="0" src="">
+        <img id="1" src="">
+        <img id="2" src="">
         <!--<button onclick="myFunction()">Try it</button>-->
         <script type="text/javascript">
             $(document).ready(function(){
                 $.ajax({
                     url:'/files',
                     method: 'POST',
-                    data: JSON.stringify({ 'path': 'E:\\file\\images\\Putin.jpg'}),
+                    data: JSON.stringify({"path": ["E:\\file\\images\\Putin.jpg","E:\\file\\images\\Jackie.jpg","E:\\file\\images\\batya.jpg"]}),
 //                    ContentType: 'application/json',
                         charset:'UTF-8',
                         success: function(base64String) {
+                        let baseArray = JSON.parse(JSON.stringify(base64String));
 
-                            document.getElementById("avatar").src = "data:image/png;base64,"+base64String;
+                            console.log('base64String.size(): ',baseArray.length);
+
+                            for(let index = 0; index < baseArray.length; index++){
+                                document.getElementById(index).src = "data:image/png;base64,"+base64String[index];
+                            }
                         }
                     });
             });
