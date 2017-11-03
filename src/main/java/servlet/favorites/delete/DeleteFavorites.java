@@ -1,7 +1,7 @@
 package servlet.favorites.delete;
 /**
  * @author Prosony
- * @since 0.2.7.1 alpha
+ * @since 0.0.1
  */
 import memcach.FavoritesCache;
 import memcach.JsonWebTokenCache;
@@ -32,10 +32,10 @@ public class DeleteFavorites extends HttpServlet{
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         String jwtToken = (String) jsonObject.get("token");
-        String idPostAd = (String) jsonObject.get("id");
+        UUID idPostAd = UUID.fromString((String) jsonObject.get("id"));
 
         if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
-            if (idPostAd != null && !idPostAd.isEmpty() &&  !idPostAd.equals("null")) {
+            if (idPostAd != null && !idPostAd.toString().isEmpty() &&  !idPostAd.toString().equals("null")) {
 
                 Account account = tokenCache.getAccountByJws(jwtToken);
                 if (account != null){
@@ -43,23 +43,24 @@ public class DeleteFavorites extends HttpServlet{
                     ArrayList<Favorites> favorites = favoritesCache.getListFavoritesByIdAccount(idAccount);
                     if (favorites != null && !favorites.isEmpty()){
 
-                        favorites = deleteFavoritesFromList(UUID.fromString(idPostAd), favorites);
+                        favorites = deleteFavoritesFromList(idPostAd, favorites);
                         favoritesCache.deleteListFavorites(idAccount);
                         favoritesCache.addListFavorites(idAccount,favorites);
+                        testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [SUCCESS]");
                     }else{
                         favoritesCache.deleteListFavorites(idAccount);
                     }
 
                 }else{
-                    testLog.sendToConsoleMessage("#TEST [class DeleteFriend] account not found");
+                    testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] account not found");
                     otherService.errorToClient(response, 401);
                 }
             }else{
-                testLog.sendToConsoleMessage("#TEST [class DeleteFriend] id friend not found");
+                testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] id friend not found");
                 otherService.errorToClient(response, 400);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class DeleteFriend] token not found");
+            testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] token not found");
             otherService.errorToClient(response, 401);
         }
 

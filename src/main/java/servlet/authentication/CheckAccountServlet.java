@@ -62,15 +62,15 @@ public class CheckAccountServlet extends HttpServlet {
                     }
                 }else {
                     testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Email or password is invalid");
-                    otherService.errorToClient(response, 400);
+                    otherService.errorToClient(response, 204);
                 }
             }else {
                 testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Account not found");
-                otherService.errorToClient(response, 400);
+                otherService.errorToClient(response, 204);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Phone or password is invalid: email: "+email+" and password: "+password);
-            otherService.errorToClient(response, 400);
+            otherService.errorToClient(response, 204);
         }
     }
 }

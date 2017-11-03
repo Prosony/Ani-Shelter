@@ -19,16 +19,15 @@
                 <p>Yeah!</p>
             </div>
         </div>
-        <img id="0" src="">
-        <img id="1" src="">
-        <img id="2" src="">
+        <img id="0" src="" >
+
         <!--<button onclick="myFunction()">Try it</button>-->
         <script type="text/javascript">
             $(document).ready(function(){
                 $.ajax({
                     url:'/files',
                     method: 'POST',
-                    data: JSON.stringify({"path": ["E:\\file\\images\\Putin.jpg","E:\\file\\images\\Jackie.jpg","E:\\file\\images\\batya.jpg"]}),
+                    data: JSON.stringify({"path": ["E:\\file\\images\\logo-for-server.png"]}),
 //                    ContentType: 'application/json',
                         charset:'UTF-8',
                         success: function(base64String) {

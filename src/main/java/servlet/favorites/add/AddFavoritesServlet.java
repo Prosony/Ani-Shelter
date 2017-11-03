@@ -36,7 +36,7 @@ public class AddFavoritesServlet extends HttpServlet{
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         String jwtToken = (String) jsonObject.get("token");
-        UUID idPostAd = (UUID) jsonObject.get("id");
+        UUID idPostAd = UUID.fromString((String) jsonObject.get("id"));
 
         if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
             if (idPostAd != null && !idPostAd.toString().isEmpty() &&  !idPostAd.toString().equals("null")) {
@@ -52,22 +52,25 @@ public class AddFavoritesServlet extends HttpServlet{
                         favoritesList.add(new Favorites(idAccount, postAd.getId()));
                         favoritesCache.deleteListFavorites(idAccount);
                         favoritesCache.addListFavorites(idAccount, favoritesList);
+                        testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS]");
                     }else {
                         favoritesList = new ArrayList<>();
                         favoritesList.add(new Favorites(idAccount, postAd.getId()));
                         favoritesCache.addListFavorites(idAccount, favoritesList);
+                        testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS] first favorites");
+
                     }
 
                 } else {
-                    testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] account not found");
-                    otherService.errorToClient(response, 401);
+                    testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] account not found");
+                    otherService.errorToClient(response, 204);
                 }
             }else {
-                testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] id is empty");
-                otherService.errorToClient(response,400);
+                testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] id is empty");
+                otherService.errorToClient(response,204);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] token not found");
+            testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] token not found");
             otherService.errorToClient(response,401);
         }
 

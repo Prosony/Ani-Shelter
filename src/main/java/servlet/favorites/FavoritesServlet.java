@@ -55,12 +55,15 @@ public class FavoritesServlet extends HttpServlet {
                 if (listPostAd != null && !listPostAd.isEmpty()){
                     otherService.answerToClient(response, new Gson().toJson(listPostAd));
                 }else{
+                    testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] favorites list is empty");
                     otherService.errorToClient(response, 204);
                 }
             }else{
+                testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] account not found");
                 otherService.errorToClient(response, 401);
             }
         }else{
+            testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] token not found");
             otherService.errorToClient(response, 401);
         }
     }
