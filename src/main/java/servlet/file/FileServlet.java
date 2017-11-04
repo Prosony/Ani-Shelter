@@ -33,19 +33,20 @@ public class FileServlet extends HttpServlet {
 
         if (path != null && !path.isEmpty()){
 
-            System.out.println("#TEST [class FileServlet] gson: "+path.get(0)+ " size:"+path.size());
+            testLog.sendToConsoleMessage("#TEST [class FileServlet] [JSON]: "+path.get(0)+ " [SIZE]:"+path.size());
             JSONArray base64image = new JSONArray();
             FileService service = new FileService();
-            int index = 0;
 
+            int index = 0;
             for (Object aPath : path) {
-                System.out.println("#TEST [class FileServlet] index: "+index+" aPath: "+aPath.toString());
+
+                testLog.sendToConsoleMessage("#TEST [class FileServlet] [INDEX]: "+index+" [PATH]: "+aPath.toString());
                 base64image.add(new String(service.getFileByPath(aPath.toString())));
                 index++;
             }
-            for (Object base64: base64image){
-                System.out.println("#TEST [class FileServlet] base64: "+base64);
-            }
+//            for (Object base64: base64image){
+//                System.out.println("#TEST [class FileServlet] base64: "+base64);
+//            }
             if (!base64image.isEmpty()){
 
                 otherService.answerToClient(response, new Gson().toJson(base64image));

@@ -43,7 +43,7 @@ public class PostAdCache {
             if (account.getEmail().equals("111")){
                 postAd = new PostAd(account.getId(), "Лира ищет уютный дом и понимающих хозяев", textFirst, "E:\\file\\images\\cat-one.jpg", "E:\\file\\images\\cat-two.jpg");
                 postAd2 = new PostAd(account.getId(), "Наблюдательная Марпл хочет любить и быть любимой", textSecond, "E:\\file\\images\\mkl.jpg", "E:\\file\\images\\mkl2.jpg");
-                postAd3 = new PostAd(account.getId(), "Маленькая трусишка. Живет в приюте и мечтает уехать домой!", textThree, "E:\\file\\images\\b01.jpg", "E:\\file\\images\\b02.jpg");
+                postAd3 = new PostAd(account.getId(), "Маленькая трусишка. Живет в приюте и мечтает уехать домой!", textThree, "E:\\file\\images\\bo1.jpg", "E:\\file\\images\\bo2.jpg");
                 postAd4 = new PostAd(account.getId(), "Добряк с выразительными зелеными глазами", textFour, "E:\\file\\images\\neel1.jpg", "E:\\file\\images\\neel2.jpg");
                 postAd5 = new PostAd(account.getId(), "УМКА И ВАНЕЧКА", textFive, "E:\\file\\images\\umka1.jpg", "E:\\file\\images\\umka2.jpg");
                 postAd6 = new PostAd(account.getId(), "Ампер -вихрь позитивной энергии и неиссякаемой любви!", textSix, "E:\\file\\images\\amper1.jpg", "E:\\file\\images\\amper2.jpg");
