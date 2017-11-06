@@ -7,6 +7,7 @@ package model.ad;
 
 import java.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class PostAd {
@@ -19,11 +20,14 @@ public class PostAd {
     private String wallText;
     private String pathToImageFirst;
     private String pathToImageSecond;
+    private ArrayList<String> listPath;
 
-    public PostAd(UUID idAccount, String header, String wallPostText, String pathToImageFirst, String pathToImageSecond) {
+    public PostAd(UUID idAccount, String header, String wallPostText, String pathToImageFirst, String pathToImageSecond, ArrayList<String> list) {
         this.header = header;
         this.pathToImageFirst = pathToImageFirst;
         this.pathToImageSecond = pathToImageSecond;
+        this.listPath = list;
+
 
         this.id = UUID.randomUUID();
         this.idAccount = idAccount;
@@ -78,8 +82,17 @@ public class PostAd {
         this.pathToImageSecond = pathToImageSecond;
     }
 
+
+    public ArrayList<String> getListPath() {
+        return listPath;
+    }
+    public void setListPath (ArrayList<String> list) {
+        this.listPath = list;
+    }
+
     @Override
     public String toString() {
         return " idAccount: " + getIdAccount() + " date: "  + getPostDate() + " wallPostText " + getWallPostText() +" path to first image: "+pathToImageFirst+" path to second image: "+pathToImageSecond;
     }
+
 }

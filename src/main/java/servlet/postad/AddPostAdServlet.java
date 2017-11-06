@@ -44,21 +44,21 @@ public class AddPostAdServlet extends HttpServlet{
                 ArrayList<PostAd> content = postAdCache.getListPostAdByIdAccount(idAccount);
                if (content != null && !content.isEmpty()){
                    //TODO SOMETHING WITH BITS IMAGE
-                   PostAd postAd = new PostAd(idAccount, header, postText,pathToImageFirst,pathToImageSecond);
-                   content.add(postAd);
+//                   PostAd postAd = new PostAd(idAccount, header, postText,pathToImageFirst,pathToImageSecond, arra);
+//                   content.add(postAd);
 
-                   postAdCache.addPostAd(postAd.getId(),postAd);
-                   postAdCache.deleteListPostAdByIdAccount(idAccount);
+//                   postAdCache.addPostAd(postAd.getId(),postAd);
+//                   postAdCache.deleteListPostAdByIdAccount(idAccount);
 
-                   postAdCache.addListPostAd(idAccount, content);
+//                   postAdCache.addListPostAd(idAccount, content);
                }else{
                    testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] post content is empty");
                    content = new ArrayList<>();
                    //TODO SOMETHING WITH BITS IMAGE
-                   PostAd postAd = new PostAd(idAccount, header, postText,pathToImageFirst,pathToImageSecond);
-                   content.add(postAd);
-                   postAdCache.addPostAd(postAd.getId(),postAd);
-                   postAdCache.addListPostAd(idAccount,content);
+//                   PostAd postAd = new PostAd(idAccount, header, postText,pathToImageFirst,pathToImageSecond);
+//                   content.add(postAd);
+//                   postAdCache.addPostAd(postAd.getId(),postAd);
+//                   postAdCache.addListPostAd(idAccount,content);
 
                }
             }else{

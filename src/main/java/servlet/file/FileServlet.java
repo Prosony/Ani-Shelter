@@ -17,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 @WebServlet("/files")
 public class FileServlet extends HttpServlet {
@@ -27,14 +28,12 @@ public class FileServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
-        JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        testLog.sendToConsoleMessage("#TEST [class FileServlet] jsonObject.toJSONString(): "+ jsonObject.toJSONString());
-        JSONArray path = (JSONArray) jsonObject.get("path");
+        JSONArray path = (JSONArray) new JsonHandler().getJsonFromRequest(request).get("path");
 
         if (path != null && !path.isEmpty()){
 
             testLog.sendToConsoleMessage("#TEST [class FileServlet] [JSON]: "+path.get(0)+ " [SIZE]:"+path.size());
-            JSONArray base64image = new JSONArray();
+            ArrayList<String> base64image = new ArrayList<>();
             FileService service = new FileService();
 
             int index = 0;
