@@ -21,13 +21,14 @@ public class PostAd {
     private String pathToImageFirst;
     private String pathToImageSecond;
     private ArrayList<String> listPath;
+    private ArrayList<String> listTag;
 
-    public PostAd(UUID idAccount, String header, String wallPostText, String pathToImageFirst, String pathToImageSecond, ArrayList<String> list) {
+    public PostAd(UUID idAccount, String header, String wallPostText, String pathToImageFirst, String pathToImageSecond, ArrayList<String> list, ArrayList<String> listTag){
         this.header = header;
         this.pathToImageFirst = pathToImageFirst;
         this.pathToImageSecond = pathToImageSecond;
         this.listPath = list;
-
+        this.listTag = listTag;
 
         this.id = UUID.randomUUID();
         this.idAccount = idAccount;
@@ -90,9 +91,17 @@ public class PostAd {
         this.listPath = list;
     }
 
+    public ArrayList<String> getListTag() {
+        return listTag;
+    }
+    public void setListTag(ArrayList<String> listTag) {
+        this.listTag = listTag;
+    }
+
     @Override
     public String toString() {
         return " idAccount: " + getIdAccount() + " date: "  + getPostDate() + " wallPostText " + getWallPostText() +" path to first image: "+pathToImageFirst+" path to second image: "+pathToImageSecond;
     }
+
 
 }

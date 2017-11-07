@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/authentication/sign-in")
-public class CheckAccountServlet extends HttpServlet {
+public class AuthenticationAccountServlet extends HttpServlet {
 
 
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
@@ -54,22 +54,22 @@ public class CheckAccountServlet extends HttpServlet {
                     String compactJws = new JWTService().createJWT(request);
 
                     if (tokenCache.getAccountByJws(compactJws) == null){
-                        testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] compactJws "+compactJws);
+                        testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] compactJws "+compactJws);
                         tokenCache.addJws(compactJws, account);
                         otherService.answerToClient(response, new Gson().toJson(new AccountCallBack(account.getId(),compactJws)));
                     }else{
-                        testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Account already online!");
+                        testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Account already online!");
                     }
                 }else {
-                    testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Email or password is invalid");
+                    testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Email or password is invalid");
                     otherService.errorToClient(response, 204);
                 }
             }else {
-                testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Account not found");
+                testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Account not found");
                 otherService.errorToClient(response, 204);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class CheckAccountServlet] Phone or password is invalid: email: "+email+" and password: "+password);
+            testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Phone or password is invalid: email: "+email+" and password: "+password);
             otherService.errorToClient(response, 204);
         }
     }
