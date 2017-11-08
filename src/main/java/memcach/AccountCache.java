@@ -32,10 +32,10 @@ public class AccountCache {
 
         mapAccount = new HashMap<>();
         mapIdProfileWithProfile = new HashMap<>();
-        Account account1 = new Account("111", "111");
-        Account account2 = new Account("222", "222");
-        Account account3 = new Account("333", "333");
-        Account account4 = new Account("444", "444");
+        Account account1 = new Account("111@bk.ru", "111");
+        Account account2 = new Account("222@bk.ru", "222");
+        Account account3 = new Account("333@bk.ru", "333");
+        Account account4 = new Account("444@bk.ru", "444");
         addAccount(account1, new Profile( account1.getId(),"Vladimir", "Putin", "8(999)-868-1243", "17.10.1952",putin ,"E:\\file\\images\\Putin.jpg"));
         addAccount(account2, new Profile( account2.getId(),"Jackie", "Chan", "8(999)-868-1243", "07.04.1954", jackie,"E:\\file\\images\\Jackie.jpg"));
         addAccount(account3, new Profile( account3.getId(),"Sanya", "Batya", "8(999)-868-1243", "30.08.1954", sanya,"E:\\file\\images\\batya.jpg"));

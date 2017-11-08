@@ -39,7 +39,7 @@ public class PostAdCache {
                 "Жужа любит людей и совершенно не агрессивен по отношению к ним. С собаками более избирателен, он не навязывается сам и не любит навязчивости в свой адрес. Так что отдается в семью без животных.";
         for (UUID id: idAll) {
             Account account = accountCache.getAccountById(id);
-            if (account.getEmail().equals("111")){
+            if (account.getEmail().equals("111@bk.ru")){
 
                 ArrayList<String> listTagCheep = new ArrayList<>();
                 listTagCheep.add("Dog"); listTagCheep.add("Vaccinations"); listTagCheep.add("no breed");
