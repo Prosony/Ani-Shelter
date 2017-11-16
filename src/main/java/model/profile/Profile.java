@@ -1,11 +1,6 @@
 package model.profile;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -23,9 +18,9 @@ public class Profile {
     private String path_avatar;
     private String about;
 
-    public Profile(UUID id, String name, String surname, String phone, String birthday, String about, String path_avatar){
+    public Profile(UUID id, LocalDate dateCreateAccount, String name, String surname, String phone, String birthday, String about, String path_avatar){
         this.id = id;
-        dateCreateAccount = LocalDate.now();
+        this.dateCreateAccount = dateCreateAccount;
         this.name = name;
         this.surname = surname;
         this.phone = phone;
@@ -33,6 +28,7 @@ public class Profile {
         this.path_avatar = path_avatar;
         this.about = about;
     }
+
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id= id; }
 

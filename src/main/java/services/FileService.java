@@ -14,9 +14,7 @@ public class FileService {
     public byte[] getFileByPath(String path){
 
         if (path != null && !path.isEmpty() && !path.equalsIgnoreCase("null")) {
-            testLog.sendToConsoleMessage("#TEST [class FileService] method[getFileByPath] from request filepath: " +path);
             File file = new File(path);
-
             if (file.exists()) {
                 testLog.sendToConsoleMessage("#TEST [class FileService] method[getFileByPath] file name: "+file.getName()+", file exist?: "+file.exists()+", path: "+file.getPath());
                 BufferedInputStream input = null;

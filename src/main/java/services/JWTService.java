@@ -33,7 +33,6 @@ public class JWTService {
         JsonObject object = new JsonObject();
         object.addProperty("data", dataNow);
         object.addProperty("ipHost", ipHost);
-        testLog.sendToConsoleMessage("#TEST [class JWTService] json object: " +object);
         Key tokenKey = new SecretKeySpec(secretStringBytes, String.valueOf(object));
 
         String compactJws = Jwts.builder()

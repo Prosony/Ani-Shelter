@@ -29,7 +29,6 @@ public class JsonHandler {
             }
             if (!builder.toString().isEmpty()){
                 JSONParser parser = new JSONParser();
-                testLog.sendToConsoleMessage("#INFO [class JsonHandler] [method getJsonFromRequest] builder.toString(): "+builder.toString());
                 Object obj = parser.parse(builder.toString());
                 JSONObject jsonObject = (JSONObject) obj;
                 testLog.sendToConsoleMessage("#TEST [class JsonHandler] jsonObject: "+jsonObject);

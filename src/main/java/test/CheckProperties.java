@@ -9,7 +9,6 @@ import java.util.Properties;
 
 public class CheckProperties {
 	private boolean isTest = false;
-
 	private CheckProperties(){
 		try {
 			Properties properties = new Properties();

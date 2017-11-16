@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import services.*;
 import model.account.Account;
 import services.account.AccountService;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -43,18 +44,18 @@ public class AuthenticationAccountServlet extends HttpServlet {
         String email = (String) jsonObject.get("email");
         String password = (String) jsonObject.get("password");
 
-
         if ((email != null && !email.equals("")) && (password != null && !password.equals(""))){
-            Account account = new AccountService().searchAccountByEmail(email);
-            testLog.sendToConsoleMessage("sing in: "+account);
+
+            Account account = new AccountService().searchAccountByEmail(email); //check in cache
+
 
             if (account != null) {
-                if (email.equalsIgnoreCase(account.getEmail()) && password.equals(account.getPassword())) {
+                testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] [CACHE]: "+account);
 
+                if (email.equalsIgnoreCase(account.getEmail()) && password.equals(account.getPassword())) {
                     String compactJws = new JWTService().createJWT(request);
 
                     if (tokenCache.getAccountByJws(compactJws) == null){
-                        testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] compactJws "+compactJws);
                         tokenCache.addJws(compactJws, account);
                         otherService.answerToClient(response, new Gson().toJson(new AccountCallBack(account.getId(),compactJws)));
                     }else{
@@ -65,8 +66,19 @@ public class AuthenticationAccountServlet extends HttpServlet {
                     otherService.errorToClient(response, 204);
                 }
             }else {
-                testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Account not found");
-                otherService.errorToClient(response, 204);
+                testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Account not found in cache, search in db");
+                SelectQueryDB selectQueryDB = new SelectQueryDB();
+                account = selectQueryDB.getAccountByEmail(email, password);
+
+                if (account != null){
+                    testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] [DB]: "+account);
+                    String compactJws = new JWTService().createJWT(request);
+                    tokenCache.addJws(compactJws, account);
+                    otherService.answerToClient(response, new Gson().toJson(new AccountCallBack(account.getId(), compactJws)));
+                }else{
+                    testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] [ERROR] Account not found in db");
+                    otherService.errorToClient(response, 204);
+                }
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class AuthenticationAccountServlet] Phone or password is invalid: email: "+email+" and password: "+password);

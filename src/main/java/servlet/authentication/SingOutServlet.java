@@ -29,8 +29,7 @@ public class SingOutServlet extends HttpServlet {
         if (tokenJws != null && !tokenJws.equals("")){
             if(tokenCache.getAccountByJws(tokenJws) != null) {
                 tokenCache.deleteJws(tokenJws);
-                testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Account was deleted from cache ");
-//                otherService.errorToClient(response,200);
+                testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Token was deleted from cache ");
             }else{
                 testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Can't find account by token");
                 otherService.errorToClient(response,204);

@@ -23,6 +23,7 @@ public class PostAdCache {
     public PostAdCache(){
         mapPostAd = new HashMap<>();
         mapListPostAd = new HashMap<>();
+
         AccountCache accountCache = AccountCache.getInstance();
         Set<UUID> idAll = accountCache.getAllKeyMapAccount();
         PostAd postAd; PostAd postAd2; PostAd postAd3; PostAd postAd4; PostAd postAd5; PostAd postAd6;

@@ -12,17 +12,15 @@ import java.util.UUID;
 
 public class AccountService {
     private AccountCache instance = AccountCache.getInstance();
-
     private TestLog testLog = new TestLog();
-
 
     public Account searchAccountByEmail(String email){
         Set<UUID> collection = instance.getAllKeyMapAccount();
         Account account;
         for (UUID key : collection){
             account = instance.getAccountById(key);
-            if (account.getEmail().equals(email)){
-                testLog.sendToConsoleMessage("key: " + key);
+            testLog.sendToConsoleMessage("#INFO [AccountService ] [searchAccountByEmail] ID: "+key+", account.getEmail(): " + account.getEmail()+ " email: "+email);
+            if (account.getEmail().equalsIgnoreCase(email)){
                 return account;
             }
         }

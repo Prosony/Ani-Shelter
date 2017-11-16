@@ -60,6 +60,12 @@
             <artifactId>tomcat-catalina</artifactId>
             <version>8.5.21</version>
         </dependency>
+        <!--DataBase-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.39</version>
+        </dependency>
 
 
     </dependencies>

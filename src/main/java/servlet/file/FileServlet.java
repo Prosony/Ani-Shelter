@@ -32,7 +32,6 @@ public class FileServlet extends HttpServlet {
 
         if (path != null && !path.isEmpty()){
 
-            testLog.sendToConsoleMessage("#TEST [class FileServlet] [JSON]: "+path.get(0)+ " [SIZE]:"+path.size());
             ArrayList<String> base64image = new ArrayList<>();
             FileService service = new FileService();
 
@@ -43,9 +42,6 @@ public class FileServlet extends HttpServlet {
                 base64image.add(new String(service.getFileByPath(aPath.toString())));
                 index++;
             }
-//            for (Object base64: base64image){
-//                System.out.println("#TEST [class FileServlet] base64: "+base64);
-//            }
             if (!base64image.isEmpty()){
 
                 otherService.answerToClient(response, new Gson().toJson(base64image));
@@ -57,26 +53,6 @@ public class FileServlet extends HttpServlet {
             testLog.sendToConsoleMessage("#TEST [class FileServlet] path is empty");
             otherService.errorToClient(response,400);
         }
-
-        //
-//            System.out.println(user);
-//        }
-//        JsonParser parser = new JsonParser();
-//        JsonObject mainObject = parser.parse(path).getAsJsonObject();
-//        JsonArray pItem = mainObject.getAsJsonArray("path");
-
-//        for (JsonElement user : pItem) {
-//
-//            System.out.println(user);
-//        }
-//        if (path != null && !path.isEmpty()){
-//
-//            otherService.answerToClient(response,new Gson().toJson(new String(new FileService().getFileByPath(path))));
-//        }else{
-//            testLog.sendToConsoleMessage("#TEST [class FileServlet] path is empty");
-//            otherService.errorToClient(response,400);
-//        }
-
     }
 
 

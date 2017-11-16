@@ -10,6 +10,7 @@ import model.account.Account;
 import model.profile.Profile;
 import org.json.simple.JSONObject;
 import services.*;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -58,17 +59,33 @@ public class ProfileServlet extends HttpServlet {
 
     private void sendProfileByJWT(HttpServletResponse response, UUID id){
             Profile profile = accountCache.getProfileById(id);
-            otherService.answerToClient(response, new Gson().toJson(profile));
+            if (profile != null){
+                otherService.answerToClient(response, new Gson().toJson(profile));
+            }else{
+                testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
+                sendProfileFromDB(response, id);
+            }
     }
 
     private void sendProfileById(HttpServletResponse response, UUID id){
-        Account account = accountCache.getAccountById(id);
-        if (account != null){
-            Profile profile = accountCache.getProfileById(account.getId());
+        Profile profile = accountCache.getProfileById(id);
+        if (profile != null){
             otherService.answerToClient(response, new Gson().toJson(profile));
         }else {
-            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found");
-            otherService.errorToClient(response, 404);
+            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
+            sendProfileFromDB(response, id);
+        }
+    }
+    private void sendProfileFromDB(HttpServletResponse response, UUID id){
+
+        Profile profile;
+        SelectQueryDB selectQueryDB = new SelectQueryDB();
+        profile =selectQueryDB.getProfileById(id);
+        if (profile != null){
+            otherService.answerToClient(response, new Gson().toJson(profile));
+        }else{
+            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [DB]!");
+            otherService.errorToClient(response, 204);
         }
     }
 }

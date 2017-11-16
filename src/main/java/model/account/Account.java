@@ -14,8 +14,8 @@ public class Account {
     public Account(){
     }
 
-    public Account(String email, String password){
-        this.id = UUID.randomUUID();
+    public Account(UUID id, String email, String password){
+        this.id = id;
         this.email = email;
         this.password = password;
     }
@@ -28,9 +28,6 @@ public class Account {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
-
-//    public int getProfileId() { return profile_id; }
-//    public void setProfileId(int profile_id) { this.profile_id = profile_id; }
 
     @Override
     public String toString() {
