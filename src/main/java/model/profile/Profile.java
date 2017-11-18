@@ -13,16 +13,18 @@ public class Profile {
     private LocalDate dateCreateAccount;
     private String name;
     private String surname;
+    private String email;
     private String phone;
     private String birthday;
     private String path_avatar;
     private String about;
 
-    public Profile(UUID id, LocalDate dateCreateAccount, String name, String surname, String phone, String birthday, String about, String path_avatar){
+    public Profile(UUID id, LocalDate dateCreateAccount, String name, String surname, String email, String phone, String birthday, String about, String path_avatar){
         this.id = id;
         this.dateCreateAccount = dateCreateAccount;
         this.name = name;
         this.surname = surname;
+        this.email = email;
         this.phone = phone;
         this.birthday = birthday;
         this.path_avatar = path_avatar;
@@ -42,6 +44,13 @@ public class Profile {
 
     public String getSurname() { return surname; }
     public void setSurname(String surname) { this.surname = surname; }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getPhone() {
         return phone;
@@ -68,5 +77,4 @@ public class Profile {
     public String toString() {
         return "ID: " + getId() + " Name: " + getName() + " Surname: " + getSurname() + " Birthday: " + getBirthday() + " Path Avatar: " + getPathAvatar();
     }
-
 }

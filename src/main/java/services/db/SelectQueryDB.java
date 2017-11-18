@@ -43,7 +43,7 @@ public class SelectQueryDB {
                 String about = rsAccount.getString("about");
 
                 DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, phone, birthday, about, pathAvatar);
+                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, email, phone, birthday, about, pathAvatar);
 
             }
             if (account != null && profile != null){
@@ -55,9 +55,10 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        printAllConnection();
         return account;
     }
+
     public Profile getProfileById(UUID id){
         Profile profile = null;
         try {
@@ -71,17 +72,41 @@ public class SelectQueryDB {
                 String date = rsAccount.getString("date_create_account");
                 String name =rsAccount.getString("name");
                 String surname = rsAccount.getString("surname");
+                String email = rsAccount.getString("email");
                 String phone = rsAccount.getString("phone");
                 String birthday = rsAccount.getString("birthday");
                 String pathAvatar = rsAccount.getString("path_avatar");
                 String about = rsAccount.getString("about");
                 DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, phone, birthday, about, pathAvatar);
+                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, email, phone, birthday, about, pathAvatar);
             }
+            dataBaseService.putback(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        printAllConnection();
         return profile;
     }
 
+    public String getTagsbyTitle(String title){
+        String jsonTag = null;
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            ResultSet rsAccount;
+            rsAccount = stmt.executeQuery("select * from tags where tags.title = '"+title+"';");
+            while (rsAccount.next()) {
+                jsonTag =rsAccount.getString("json_tag");
+            }
+            dataBaseService.putback(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printAllConnection();
+        return jsonTag;
+    }
+    private void printAllConnection(){
+        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
+
+    }
 }

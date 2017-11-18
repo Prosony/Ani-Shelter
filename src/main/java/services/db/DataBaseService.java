@@ -95,7 +95,7 @@ public class DataBaseService {
     /**
      * @return the number of available connections
      */
-    public int getAvailableConnections() {
-        return availableConnections.size();
+    public String getAvailableConnections() {
+        return ("availableConnections: " + availableConnections.size() + ", usedConnections: " + usedConnections.size());
     }
 }
