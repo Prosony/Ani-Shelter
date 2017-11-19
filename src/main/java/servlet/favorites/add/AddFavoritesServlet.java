@@ -46,7 +46,7 @@ public class AddFavoritesServlet extends HttpServlet{
                 if (account != null) {
 
                     UUID idAccount = account.getId();
-                    ArrayList<Favorites> favoritesList= favoritesCache.getListFavoritesByIdAccount(idAccount);
+                    ArrayList<Favorites> favoritesList = favoritesCache.getListFavoritesByIdAccount(idAccount);
                     PostAd postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
                     if (favoritesList != null){
                         favoritesList.add(new Favorites(idAccount, postAd.getId()));

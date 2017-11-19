@@ -1,7 +1,11 @@
 package services.db;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import memcach.AccountCache;
 import model.account.Account;
+import model.ad.PostAd;
 import model.profile.Profile;
 import test.TestLog;
 
@@ -11,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class SelectQueryDB {
@@ -88,7 +93,7 @@ public class SelectQueryDB {
         return profile;
     }
 
-    public String getTagsbyTitle(String title){
+    public String getTagsByTitle(String title){
         String jsonTag = null;
         try {
             Connection connection = dataBaseService.retrieve();
@@ -105,8 +110,39 @@ public class SelectQueryDB {
         printAllConnection();
         return jsonTag;
     }
+
     private void printAllConnection(){
         testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
 
+    }
+
+
+    public ArrayList<PostAd> getAllPostAdByIdAccount(UUID idAccount){
+        ArrayList<PostAd> list = new ArrayList<>();
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account = '"+idAccount+"';");
+            while (data.next()) {
+                UUID id = UUID.fromString(data.getString("id"));
+                JsonParser jsonParser = new JsonParser();
+                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
+                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
+                JsonArray jsonPathImage  = (JsonArray)jsonParser.parse(data.getString("json_path_image"));
+                JsonArray jsonPathAvatar  = (JsonArray)jsonParser.parse(data.getString("json_path_avatar"));
+                PostAd postAd = new PostAd(id,idAccount,jsonText,jsonTags,jsonPathImage,jsonPathAvatar);
+                list.add(postAd);
+            }
+            dataBaseService.putback(connection);
+            if (!list.isEmpty()){
+                return list;
+            }else{
+                testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [DB] list is empty");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printAllConnection();
+        return null;
     }
 }

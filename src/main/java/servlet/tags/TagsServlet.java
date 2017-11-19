@@ -36,7 +36,7 @@ public class TagsServlet extends HttpServlet {
                 Account account = jwtService.checkJWT(jwtKey);
                 if (account != null) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
-                    String  jsonTag = selectQueryDB.getTagsbyTitle(title);
+                    String  jsonTag = selectQueryDB.getTagsByTitle(title);
                     testLog.sendToConsoleMessage("#TEST [class ProfileServlet] jsonTag: "+jsonTag);
                     if (jsonTag != null && !jsonTag.isEmpty() && !jsonTag.equals("null")){
                         otherService.answerToClient(response, new Gson().toJson(jsonTag));

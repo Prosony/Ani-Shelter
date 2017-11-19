@@ -10,6 +10,7 @@ import memcach.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -50,7 +51,12 @@ public class PostAdServlet extends HttpServlet {
                     if (content != null && !content.isEmpty()){
                         otherService.answerToClient(response, new Gson().toJson(content));
                     }else{
-                        testLog.sendToConsoleMessage("#TEST [class PostAdServlet] post ad not found");
+                        testLog.sendToConsoleMessage("#TEST [class PostAdServlet] post ad not found in cache");
+                        SelectQueryDB selectQueryDB = new SelectQueryDB();
+
+                        ArrayList<PostAd> list =  selectQueryDB.getAllPostAdByIdAccount(idAccount);
+                        System.out.println("#TEST [class PostAdServlet] [DB] list post_ad from DB "+list);
+                        otherService.answerToClient(response, new Gson().toJson(list));
                     }
 
                 }else{

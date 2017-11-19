@@ -5,9 +5,9 @@ package model.ad;
  * @since 0.0.1
  */
 
-import java.time.LocalDate;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class PostAd {
@@ -15,25 +15,19 @@ public class PostAd {
     private UUID id;
     private UUID idAccount;
 
-    private LocalDate date;
-    private String header;
-    private String wallText;
-    private String pathToImageFirst;
-    private String pathToImageSecond;
-    private ArrayList<String> listPath;
-    private ArrayList<String> listTag;
+    private JsonObject jsonText;
+    private JsonObject jsonTags;
+    private JsonArray jsonPathImage;
+    private JsonArray jsonPathAvatar;
 
-    public PostAd(UUID idAccount, String header, String wallPostText, String pathToImageFirst, String pathToImageSecond, ArrayList<String> list, ArrayList<String> listTag){
-        this.header = header;
-        this.pathToImageFirst = pathToImageFirst;
-        this.pathToImageSecond = pathToImageSecond;
-        this.listPath = list;
-        this.listTag = listTag;
+    public PostAd(UUID id, UUID idAccount, JsonObject jsonText, JsonObject jsonTags, JsonArray jsonPathImage, JsonArray jsonPathAvatar){
 
-        this.id = UUID.randomUUID();
+        this.id = id;
         this.idAccount = idAccount;
-        this.date = LocalDate.now();
-        this.wallText = wallPostText;
+        this.jsonText = jsonText;
+        this.jsonTags = jsonTags;
+        this.jsonPathImage = jsonPathImage;
+        this.jsonPathAvatar = jsonPathAvatar;
     }
 
     public UUID getId() {
@@ -50,58 +44,43 @@ public class PostAd {
         this.idAccount = idAccount;
     }
 
-    public LocalDate getPostDate() {
-        return date;
+    public JsonObject getJsonText() {
+        return jsonText;
+    }
+    public void setJsonText(JsonObject jsonText) {
+        this.jsonText = jsonText;
     }
 
-    public String getHeader() {
-        return header;
+    public JsonObject getJsonTags() {
+        return jsonTags;
     }
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    public void setWallPostText(String wallPostText) {
-        this.wallText = wallPostText;
-    }
-    public String getWallPostText() {
-        return wallText;
+    public void setJsonTags(JsonObject jsonTags) {
+        this.jsonTags = jsonTags;
     }
 
-
-    public String getPathToImageFirst() {
-        return pathToImageFirst;
+    public JsonArray getJsonPathImage() {
+        return jsonPathImage;
     }
-    public void setPathToImageFirst(String pathToImageFirst) {
-        this.pathToImageFirst = pathToImageFirst;
-    }
-
-    public String getPathToImageSecond() {
-        return pathToImageSecond;
-    }
-    public void setPathToImageSecond(String pathToImageSecond) {
-        this.pathToImageSecond = pathToImageSecond;
+    public void setJsonPathImage(JsonArray jsonPathImage) {
+        this.jsonPathImage = jsonPathImage;
     }
 
-
-    public ArrayList<String> getListPath() {
-        return listPath;
+    public JsonArray getJsonPathAvatar() {
+        return jsonPathAvatar;
     }
-    public void setListPath (ArrayList<String> list) {
-        this.listPath = list;
-    }
-
-    public ArrayList<String> getListTag() {
-        return listTag;
-    }
-    public void setListTag(ArrayList<String> listTag) {
-        this.listTag = listTag;
+    public void setJsonPathAvatar(JsonArray jsonPathAvatar) {
+        this.jsonPathAvatar = jsonPathAvatar;
     }
 
     @Override
     public String toString() {
-        return " idAccount: " + getIdAccount() + " date: "  + getPostDate() + " wallPostText " + getWallPostText() +" path to first image: "+pathToImageFirst+" path to second image: "+pathToImageSecond;
+        return "\n{"
+                + "\tid :" + id+"\n"
+                + "\tidAccount : " + idAccount+"\n"
+                + "\tjsonText : " + jsonText+"\n"
+                + "\tjsonTags : " + jsonTags+"\n"
+                + "\tjsonPathImage : " + jsonPathImage+"\n"
+                + "\tjsonPathAvatar : " + jsonPathAvatar+"\n"
+                +"}\n";
     }
-
-
 }

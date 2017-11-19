@@ -9,10 +9,7 @@ import com.google.gson.*;
 import memcach.JsonWebTokenCache;
 import memcach.PostAdCache;
 import model.account.Account;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import services.db.InsertQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -28,7 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Random;
 import java.util.UUID;
 
@@ -55,6 +52,8 @@ public class AddPostAdServlet extends HttpServlet{
         JsonObject jsonText = (JsonObject)jsonParser.parse(stringText);
         JsonObject jsonTags = (JsonObject)jsonParser.parse(stringTags);
 
+        LocalDate date = LocalDate.now();
+        jsonText.addProperty("date", date.getDayOfMonth()+"."+date.getMonthValue()+"."+date.getYear());
 
         if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
             Account account = tokenCache.getAccountByJws(jwtToken);
@@ -80,8 +79,8 @@ public class AddPostAdServlet extends HttpServlet{
     }
     private JsonArray saveFileOnFS(UUID idAccount, UUID idPostAd, JsonArray objectJsonImageBase64){
 
-        JsonArray arrayInside = new JsonArray();
-        JsonArray resultArray= new JsonArray();
+        JsonArray resultArray = new JsonArray();
+
         boolean isCreated;
         try {
             String path = "E:/file/"+idAccount+"/"+idPostAd;
@@ -99,24 +98,14 @@ public class AddPostAdServlet extends HttpServlet{
                 for(int index = 0; index < objectJsonImageBase64.size(); index++){
 
                     value = random.nextInt(1000); //TODO rewrite this shit
-                    arrayInside.add(path+"/"+objectJsonImageBase64.get(index).getAsString().substring(value,value+10)+".jpg"); //TODO rewrite this shit
+                    resultArray.add(path+"/"+objectJsonImageBase64.get(index).getAsString().substring(value,value+10)+".jpg"); //TODO rewrite this shit
 
-                    if (index == 0 | index == 1){
-                        arrayInside.add("true");
-                    }else{
-                        arrayInside.add("false");
-                    }
-
-                    File newTextFile = new File(arrayInside.get(0).getAsString());
+                    File newTextFile = new File(resultArray.get(index).getAsString());
                     FileWriter fw = new FileWriter(newTextFile);
                     fw.write(objectJsonImageBase64.get(index).getAsString());
                     fw.close();
-
-                    resultArray.add(arrayInside); //TODO fix bug
-                    arrayInside.remove(0);
-                    arrayInside.remove(0);
                 }
-
+                testLog.sendToConsoleMessage("resultArray: "+resultArray);
                 return resultArray;
             }else{
                 testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] [saveFileOnFS] [ERROR]: Something wrong with path [E:/file/"+idAccount+"/"+idPostAd+"]");
