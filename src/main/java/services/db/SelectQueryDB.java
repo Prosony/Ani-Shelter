@@ -123,9 +123,9 @@ public class SelectQueryDB {
             Connection connection = dataBaseService.retrieve();
             Statement stmt= connection.createStatement();
             ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account = '"+idAccount+"';");
+            JsonParser jsonParser = new JsonParser();
             while (data.next()) {
                 UUID id = UUID.fromString(data.getString("id"));
-                JsonParser jsonParser = new JsonParser();
                 JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
                 JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
                 JsonArray jsonPathImage  = (JsonArray)jsonParser.parse(data.getString("json_path_image"));
@@ -144,5 +144,53 @@ public class SelectQueryDB {
         }
         printAllConnection();
         return null;
+    }
+    public PostAd getPostAdByIdPostAd(UUID idPostAd){
+        PostAd postAd = null;
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id = '"+idPostAd+"';");
+            JsonParser jsonParser = new JsonParser();
+            while (data.next()) {
+                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
+                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
+                JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
+                JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
+                postAd = new PostAd(
+                        UUID.fromString(data.getString("id")),UUID.fromString(data.getString("id_account")),jsonText,jsonTags,
+                        jsonPathImage,jsonPathAvatar);
+            }
+            dataBaseService.putback(connection);
+            return postAd;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printAllConnection();
+        return postAd;
+    }
+    public ArrayList<PostAd> getPostAdPeople(UUID idAccount){
+        ArrayList<PostAd> list = new ArrayList<>();
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account != '"+idAccount+"';");
+            JsonParser jsonParser = new JsonParser();
+            while (data.next()) {
+                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
+                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
+                JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
+                JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
+                list.add(new PostAd(
+                        UUID.fromString(data.getString("id")),UUID.fromString(data.getString("id_account")),jsonText,jsonTags,
+                        jsonPathImage,jsonPathAvatar));
+            }
+            dataBaseService.putback(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printAllConnection();
+        return list;
     }
 }

@@ -83,18 +83,11 @@ public class AddPostAdServlet extends HttpServlet{
 
         boolean isCreated;
         try {
-            String path = "E:/file/"+idAccount+"/"+idPostAd;
-            Path pathCheck = Paths.get(path);
-            if (!Files.exists(pathCheck)) {
-                File folder = new File(path);
-                isCreated = folder.mkdir();
-            } else {
-                isCreated = true;
-            }
+            isCreated = createFolder(idAccount, idPostAd);
             if (isCreated){
+                String path = "E:/file/"+idAccount+"/"+idPostAd;
                 Random random = new Random();
                 int value;
-
                 for(int index = 0; index < objectJsonImageBase64.size(); index++){
 
                     value = random.nextInt(1000); //TODO rewrite this shit
@@ -114,5 +107,27 @@ public class AddPostAdServlet extends HttpServlet{
             iox.printStackTrace();
         }
         return null;
+    }
+
+    private boolean createFolder(UUID idAccount, UUID idPostAd){
+        boolean isFirst = false;
+        boolean isSecond = false;
+        String pathFirst = "E:/file/"+idAccount;
+        String pathSecond = "E:/file/"+idAccount+"/"+idPostAd;
+
+        if ( !Files.exists(Paths.get(pathFirst)) ) {
+            File folder = new File(pathFirst);
+            isFirst = folder.mkdir();
+        }else{
+            isFirst = true;
+        }
+        if ( !Files.exists(Paths.get(pathSecond)) ) {
+            File folder = new File(pathSecond);
+            isSecond = folder.mkdir();
+        }else{
+            isSecond = true;
+        }
+        System.out.println("#INFO [AddPostAdServlet] [createFolder] isFirst: "+isFirst+" isSecond: "+isSecond);
+        return (isFirst && isSecond);
     }
 }

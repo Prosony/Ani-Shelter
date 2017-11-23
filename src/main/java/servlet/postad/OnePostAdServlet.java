@@ -6,6 +6,7 @@ import memcach.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -22,6 +23,7 @@ public class OnePostAdServlet extends HttpServlet {
     private TestLog testLog = TestLog.getInstance();
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private OtherService otherService = new OtherService();
+    private PostAdCache postAdCache = PostAdCache.getInstance();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
@@ -37,12 +39,12 @@ public class OnePostAdServlet extends HttpServlet {
                 Account account = tokenCache.getAccountByJws(jwtToken);
 
                 if (account != null) {
-                    PostAdCache postAdCache = PostAdCache.getInstance();
-                    PostAd postAd = postAdCache.getPostAdByIdPostAd(id);
+                    PostAd postAd = getPostId(id);
                     if (postAd != null){
                         testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] [SUCCESS] postAd: "+postAd );
                         otherService.answerToClient(response, new Gson().toJson(postAd));
                     }else{
+
                         testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] post ad not found");
                         otherService.errorToClient(response, 204);
                     }
@@ -58,5 +60,14 @@ public class OnePostAdServlet extends HttpServlet {
             testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] token not found");
             otherService.errorToClient(response, 204);
         }
+    }
+    private PostAd getPostId(UUID idPostAd){
+        PostAd postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
+        if (postAd == null){
+            SelectQueryDB selectQueryDB = new SelectQueryDB();
+            postAd = selectQueryDB.getPostAdByIdPostAd(idPostAd);
+            postAdCache.addPostAd(postAd.getId(),postAd);
+        }
+        return postAd;
     }
 }

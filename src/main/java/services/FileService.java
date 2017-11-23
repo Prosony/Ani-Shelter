@@ -21,7 +21,7 @@ public class FileService {
                 byte[] bytes;
                 try {
                     bytes = loadFile(file);
-                    return java.util.Base64.getEncoder().encode(bytes);
+                    return bytes;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

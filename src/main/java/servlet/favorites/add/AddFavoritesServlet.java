@@ -11,6 +11,7 @@ import model.account.Account;
 import model.ad.PostAd;
 import model.favorites.Favorites;
 import org.json.simple.JSONObject;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -47,19 +48,26 @@ public class AddFavoritesServlet extends HttpServlet{
 
                     UUID idAccount = account.getId();
                     ArrayList<Favorites> favoritesList = favoritesCache.getListFavoritesByIdAccount(idAccount);
-                    PostAd postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
-                    if (favoritesList != null){
-                        favoritesList.add(new Favorites(idAccount, postAd.getId()));
-                        favoritesCache.deleteListFavorites(idAccount);
-                        favoritesCache.addListFavorites(idAccount, favoritesList);
-                        testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS]");
-                    }else {
-                        favoritesList = new ArrayList<>();
-                        favoritesList.add(new Favorites(idAccount, postAd.getId()));
-                        favoritesCache.addListFavorites(idAccount, favoritesList);
-                        testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS] first favorites");
 
+                    PostAd postAd = getPostId(idPostAd);
+                    if (postAd !=null){
+                        if (favoritesList != null){
+                            favoritesList.add(new Favorites(idAccount, postAd.getId()));
+                            favoritesCache.deleteListFavorites(idAccount);
+                            favoritesCache.addListFavorites(idAccount, favoritesList);
+                            testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS]");
+                        }else {
+                            favoritesList = new ArrayList<>();
+                            favoritesList.add(new Favorites(idAccount, postAd.getId()));
+                            favoritesCache.addListFavorites(idAccount, favoritesList);
+                            testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [SUCCESS] first favorites");
+
+                        }
+                    }else{
+                        testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] post ad not found");
+                        otherService.errorToClient(response, 204);
                     }
+
 
                 } else {
                     testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] account not found");
@@ -74,5 +82,15 @@ public class AddFavoritesServlet extends HttpServlet{
             otherService.errorToClient(response,401);
         }
 
+    }
+
+    private PostAd getPostId(UUID idPostAd){
+        PostAd postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
+        if (postAd == null){
+            SelectQueryDB selectQueryDB = new SelectQueryDB();
+            postAd = selectQueryDB.getPostAdByIdPostAd(idPostAd);
+            postAdCache.addPostAd(postAd.getId(),postAd);
+        }
+        return postAd;
     }
 }

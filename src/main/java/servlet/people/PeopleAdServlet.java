@@ -9,6 +9,7 @@ import memcach.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;
+import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -39,34 +40,9 @@ public class PeopleAdServlet extends HttpServlet {
             Account account = tokenCache.getAccountByJws(jwtToken);
 
             if (account != null) {
-
-                Set<UUID> idAll = postAdCache.getAllIdPostAd();
-                testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] all id post ad: "+idAll);
-
-                if (idAll != null && !idAll.isEmpty()) {
-
-                    UUID idAccount = account.getId();
-                    ArrayList<PostAd> listAd = new ArrayList<>();
-                    PostAd postAd;
-                    for (UUID idPostAd : idAll) {
-                        postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
-                        if (!idAccount.equals(postAd.getIdAccount())){ //do something with favorites post ad
-                            listAd.add(postAd);
-                        }
-                    }
-                    testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] list ad people: "+new Gson().toJson(listAd));
-
-                    if (!listAd.isEmpty()){
-                        otherService.answerToClient(response, new Gson().toJson(listAd));
-                    }else{
-                        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] ad people not found (null or empty)");
-                        otherService.errorToClient(response,204);
-                    }
-
-                }else{
-                    testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] Set<UUID> idAll = postAdCache.getAllIdPostAd() equals null or empty");
-                    otherService.errorToClient(response,204);
-                }
+                SelectQueryDB selectQueryDB = new SelectQueryDB();
+                ArrayList<PostAd> list =selectQueryDB.getPostAdPeople(account.getId());
+                otherService.answerToClient(response, new Gson().toJson(list));
             }else{
                 testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] Account not found");
                 otherService.errorToClient(response,401);
@@ -77,3 +53,33 @@ public class PeopleAdServlet extends HttpServlet {
         }
     }
 }
+
+
+//    Set<UUID> idAll = postAdCache.getAllIdPostAd();
+//                testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] all id post ad: "+idAll);
+//
+//                        if (idAll != null && !idAll.isEmpty()) {
+//
+//                        UUID idAccount = account.getId();
+//                        ArrayList<PostAd> listAd = new ArrayList<>();
+//        PostAd postAd;
+//        for (UUID idPostAd : idAll) {
+//        postAd = postAdCache.getPostAdByIdPostAd(idPostAd);
+//        if (!idAccount.equals(postAd.getIdAccount())){ //do something with favorites post ad
+//        listAd.add(postAd);
+//        }
+//        }
+//        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] list ad people: "+new Gson().toJson(listAd));
+//
+//        if (!listAd.isEmpty()){
+//        otherService.answerToClient(response, new Gson().toJson(listAd));
+//        }else{
+//        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] ad people not found (null or empty)");
+//        otherService.errorToClient(response,204);
+//        }
+//
+//        }else{
+//        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] not found post ad in cache");
+//
+//        otherService.errorToClient(response,204);
+//        }

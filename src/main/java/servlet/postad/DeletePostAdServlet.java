@@ -9,6 +9,7 @@ import memcach.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;
+import services.db.DeleteQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -31,7 +32,7 @@ public class DeletePostAdServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response){
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         String jwtToken = (String) jsonObject.get("token");
-        UUID idPostAd  = (UUID) jsonObject.get("id");
+        UUID idPostAd  = UUID.fromString(jsonObject.get("id").toString());
 
 
         if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
@@ -44,9 +45,6 @@ public class DeletePostAdServlet extends HttpServlet {
                 if (idPostAd != null && !idPostAd.toString().isEmpty() && !idPostAd.toString().equals("null")){
                     if (contents != null) {
 
-                        int indexForDelete = 0;
-                        boolean delete = false;
-
                         for (int index = 0; index < contents.size(); index++) {
 
                             UUID idPost = contents.get(index).getId();
@@ -55,24 +53,23 @@ public class DeletePostAdServlet extends HttpServlet {
                             testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] idPost: "+idPost+", id: "+idPostAd);
                             testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] idPostByAccount: "+idPostByAccount+", idAccount: "+idAccount);
                             if (idPost.equals(idPostAd) && idPostByAccount.equals(idAccount)) {
-                                indexForDelete = index;
-                                delete = true;
+                                postAdCache.deletePostContentByIdPostAd(contents.get(index).getId());
+                                contents.remove(index);
+                                testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] post:"+index+" was deleted, contents: "+contents);
+                                postAdCache.deleteListPostAdByIdAccount(idAccount);
+                                postAdCache.addListPostAd(idAccount, contents);
                                 break;
                             }
                         }
-                        if (delete) {
-                            postAdCache.deletePostContentByIdPostAd(contents.get(indexForDelete).getId());
-                            contents.remove(indexForDelete);
-                            testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] post:"+indexForDelete+" was deleted, contents: "+contents);
-                            postAdCache.deleteListPostAdByIdAccount(idAccount);
-                            postAdCache.addListPostAd(idAccount, contents);
-                        } else {
-                            testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] pust not found");
-                            otherService.errorToClient(response, 204);
-                        }
                     }else{
-                        testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] contents is null");
-                        otherService.errorToClient(response,204);
+                        testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] post ad not found in cache");
+                    }
+                    boolean result = deletePostAd(idPostAd);
+                    if (result){
+                        testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] [SUCCESS] post ad was delete!");
+                    }else{
+                        testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] post not found");
+                        otherService.errorToClient(response, 204);
                     }
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] idPostAd is null , idPostAd: "+idPostAd);
@@ -88,5 +85,8 @@ public class DeletePostAdServlet extends HttpServlet {
             otherService.errorToClient(response,401);
             testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] token not found");
         }
+    }
+    private boolean deletePostAd(UUID idPostAd){
+        return new DeleteQueryDB().deletePostAdByIdPostAd(idPostAd);
     }
 }
