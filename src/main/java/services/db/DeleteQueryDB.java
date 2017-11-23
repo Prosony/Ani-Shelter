@@ -23,6 +23,7 @@ public class DeleteQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         return result;
     }
 }

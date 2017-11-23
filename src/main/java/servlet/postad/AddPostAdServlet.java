@@ -64,6 +64,7 @@ public class AddPostAdServlet extends HttpServlet{
                 if (jsonArrayPath != null && !jsonArrayPath.isJsonNull()){
                     new InsertQueryDB().insertPostAd(idPostAd,idAccount,jsonText,jsonTags,jsonArrayPath);
                     testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] post ad was add!");
+                    otherService.answerToClient(response,"true");
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] jsonArrayPath.isJsonNull()");
                     otherService.errorToClient(response, 500);
@@ -86,12 +87,9 @@ public class AddPostAdServlet extends HttpServlet{
             isCreated = createFolder(idAccount, idPostAd);
             if (isCreated){
                 String path = "E:/file/"+idAccount+"/"+idPostAd;
-                Random random = new Random();
-                int value;
                 for(int index = 0; index < objectJsonImageBase64.size(); index++){
 
-                    value = random.nextInt(1000); //TODO rewrite this shit
-                    resultArray.add(path+"/"+objectJsonImageBase64.get(index).getAsString().substring(value,value+10)+".jpg"); //TODO rewrite this shit
+                    resultArray.add(path+"/"+UUID.randomUUID()+".txt");
 
                     File newTextFile = new File(resultArray.get(index).getAsString());
                     FileWriter fw = new FileWriter(newTextFile);
