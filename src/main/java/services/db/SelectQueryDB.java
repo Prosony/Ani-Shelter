@@ -93,7 +93,7 @@ public class SelectQueryDB {
         return profile;
     }
 
-    public String getTagsByTitle(String title){
+    public String getTagCategoryByTitle(String title){ //TODO rewrite this shit
         String jsonTag = null;
         try {
             Connection connection = dataBaseService.retrieve();
