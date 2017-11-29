@@ -19,9 +19,7 @@ import java.util.Date;
 public class JWTService {
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private TestLog testLog = TestLog.getInstance();
-    public Account checkJWT(String tokenJws){
-        return tokenCache.getAccountByJws(tokenJws);
-    }
+
 
     public String createJWT(HttpServletRequest request) {
 

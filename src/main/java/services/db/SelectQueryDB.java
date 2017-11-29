@@ -22,6 +22,9 @@ public class SelectQueryDB {
 
     private TestLog testLog = new TestLog();
     private DataBaseService dataBaseService = DataBaseService.getInstance();
+    /**************************************************************************************************
+     *                                          ACCOUNT -/- PROFILE
+     **************************************************************************************************/
 
     public Account getAccountByEmail(String email, String password){
         Account account = null;
@@ -92,6 +95,9 @@ public class SelectQueryDB {
         printAllConnection();
         return profile;
     }
+    /**************************************************************************************************
+     *                                          TAGS -/- CATEGORY
+     **************************************************************************************************/
 
     public String getTagCategoryByTitle(String title){ //TODO rewrite this shit
         String jsonTag = null;
@@ -110,12 +116,26 @@ public class SelectQueryDB {
         printAllConnection();
         return jsonTag;
     }
-
-    private void printAllConnection(){
-        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
-
+    public ArrayList<String> getTagsByTitle(String title){
+        ArrayList<String> list = new ArrayList<>();
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            ResultSet rsAccount;
+            rsAccount = stmt.executeQuery("select * from tags where tags.title = '"+title+"';");
+            while (rsAccount.next()) {
+                list.add(rsAccount.getString("json_tag"));
+            }
+            dataBaseService.putback(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        printAllConnection();
+        return list;
     }
-
+    /**************************************************************************************************
+     *                                          POST AD
+     **************************************************************************************************/
 
     public ArrayList<PostAd> getAllPostAdByIdAccount(UUID idAccount){
         ArrayList<PostAd> list = new ArrayList<>();
@@ -192,5 +212,12 @@ public class SelectQueryDB {
         }
         printAllConnection();
         return list;
+    }
+
+    /**************************************************************************************************
+     *                                          DB SERVICE
+     **************************************************************************************************/
+    private void printAllConnection(){
+        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
     }
 }

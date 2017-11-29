@@ -6,6 +6,7 @@ package servlet.profile;
 import com.google.gson.*;
 
 import memcach.AccountCache;
+import memcach.JsonWebTokenCache;
 import model.account.Account;
 import model.profile.Profile;
 import org.json.simple.JSONObject;
@@ -27,7 +28,7 @@ public class ProfileServlet extends HttpServlet {
 
     private TestLog testLog = TestLog.getInstance();
     private AccountCache accountCache = AccountCache.getInstance();
-    private JWTService jwtService = new JWTService();
+    private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private OtherService otherService = new OtherService();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
@@ -38,7 +39,7 @@ public class ProfileServlet extends HttpServlet {
             String idAccountProfile = (String) jsonObject.get("id");
 
         if (jwtKey != null && !jwtKey.isEmpty()) {
-            Account account = jwtService.checkJWT(jwtKey);
+            Account account = tokenCache.getAccountByJws(jwtKey);
             if (account != null){
                 if (idAccountProfile != null && !idAccountProfile.isEmpty() && !idAccountProfile.equals("null")) {
                     testLog.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest: " +idAccountProfile);

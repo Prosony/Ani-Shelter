@@ -2,6 +2,7 @@ package servlet.tags;
 
 import com.google.gson.Gson;
 import memcach.AccountCache;
+import memcach.JsonWebTokenCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
 import services.JWTService;
@@ -20,7 +21,7 @@ public class TagsCategoryServlet extends HttpServlet {
 
     private TestLog testLog = TestLog.getInstance();
     private AccountCache accountCache = AccountCache.getInstance();
-    private JWTService jwtService = new JWTService();
+    private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private OtherService otherService = new OtherService();
 
 
@@ -33,11 +34,11 @@ public class TagsCategoryServlet extends HttpServlet {
 
         if (jwtKey != null && !jwtKey.isEmpty()) {
             if(title != null && !title.isEmpty() && !title.equals("null")){
-                Account account = jwtService.checkJWT(jwtKey);
+                Account account = tokenCache.getAccountByJws(jwtKey);
                 if (account != null) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
                     String  jsonTag = selectQueryDB.getTagCategoryByTitle(title); //TODO rewrite this shit
-                    testLog.sendToConsoleMessage("#TEST [class ProfileServlet] jsonTag: "+jsonTag);
+                    testLog.sendToConsoleMessage("#TEST [class TagsCategoryServlet] jsonTag: "+jsonTag);
                     if (jsonTag != null && !jsonTag.isEmpty() && !jsonTag.equals("null")){
                         otherService.answerToClient(response, new Gson().toJson(jsonTag));
                     }else{

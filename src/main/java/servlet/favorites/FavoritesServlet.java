@@ -8,6 +8,7 @@ package servlet.favorites;
 
 import com.google.gson.Gson;
 import memcach.FavoritesCache;
+import memcach.JsonWebTokenCache;
 import model.account.Account;
 import model.ad.PostAd;
 import model.favorites.Favorites;
@@ -31,16 +32,16 @@ public class FavoritesServlet extends HttpServlet {
     private TestLog testLog = new TestLog();
     private OtherService otherService = new OtherService();
     private FavoritesCache favoritesCache = FavoritesCache.getInstance();
+    private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JsonHandler jsonHandler = new JsonHandler();
-        JWTService jwtService = new JWTService();
         JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
         String jwtKey = (String) jsonObject.get("token");
 
         if (jwtKey!= null && !jwtKey.equals("") && !jwtKey.equals("null")){
-            Account account = jwtService.checkJWT(jwtKey);
+            Account account = tokenCache.getAccountByJws(jwtKey);
             if (account != null) {
 
                 PostAdService postAdService = new PostAdService();
