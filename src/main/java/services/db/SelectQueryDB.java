@@ -196,16 +196,7 @@ public class SelectQueryDB {
             Connection connection = dataBaseService.retrieve();
             Statement stmt= connection.createStatement();
             ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account != '"+idAccount+"';");
-            JsonParser jsonParser = new JsonParser();
-            while (data.next()) {
-                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
-                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
-                JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
-                JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
-                list.add(new PostAd(
-                        UUID.fromString(data.getString("id")),UUID.fromString(data.getString("id_account")),jsonText,jsonTags,
-                        jsonPathImage,jsonPathAvatar));
-            }
+            list = getPostAdFromJson(data);
             dataBaseService.putback(connection);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -214,10 +205,75 @@ public class SelectQueryDB {
         return list;
     }
 
-    /**************************************************************************************************
+    public ArrayList<PostAd> getPostAdByTags(JsonObject tags) {
+
+        ArrayList<PostAd> list = null;
+        String query = buildQuery(tags);
+        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[getPostAdByTags] query: "+query);
+        Connection connection = null;
+        try {
+            connection = dataBaseService.retrieve();
+            Statement stmt = connection.createStatement();
+            ResultSet data = stmt.executeQuery(query);
+            list = getPostAdFromJson(data);
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+     /**************************************************************************************************
      *                                          DB SERVICE
      **************************************************************************************************/
     private void printAllConnection(){
         testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
+    }
+    private ArrayList<PostAd> getPostAdFromJson(ResultSet data) throws SQLException {
+        ArrayList<PostAd> list = new ArrayList<>();
+        JsonParser jsonParser = new JsonParser();
+        while (data.next()) {
+            JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
+            JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
+            JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
+            JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
+            list.add(new PostAd(
+                    UUID.fromString(data.getString("id")), UUID.fromString(data.getString("id_account")), jsonText, jsonTags,
+                    jsonPathImage, jsonPathAvatar));
+        }
+        return list;
+    }
+
+//            '"animals":"null",' +
+//            '"group":"null",' +
+//            '"breeds":"null",' +
+//            '"age":"null",' +
+//            '"own_tags":[]' +
+
+    private String buildQuery(JsonObject tags){
+        // select * from post_ad where post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%','middle size','%');
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("select * from post_ad where ");
+        String animals = tags.get("animals").toString();
+        String group = tags.get("group").toString();
+        String age = tags.get("age").toString();
+           if (!animals.isEmpty()){
+                   builder.append("post_ad.json_tags->'$[0].animals' = ").append(animals).append(" ");
+           }
+           if (!group.isEmpty()){
+               builder.append("and  post_ad.json_tags->'$[0].group' = ").append(group).append(" ");
+           }
+           if (!age.isEmpty()){
+               builder.append("and post_ad.json_tags->'$[0].age' = ").append(age).append(" ");
+           }
+           JsonArray ownTags = tags.get("own_tags").getAsJsonArray();
+           if (!ownTags.isJsonNull()){
+               for (int index= 0; index < ownTags.size(); index++){
+                   builder.append("and post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%',").append(ownTags.get(index)).append(",'%')");
+               }
+           }
+        builder.append(";");
+        return builder.toString();
     }
 }
