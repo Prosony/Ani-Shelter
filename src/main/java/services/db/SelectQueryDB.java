@@ -255,25 +255,47 @@ public class SelectQueryDB {
 
         StringBuilder builder = new StringBuilder();
         builder.append("select * from post_ad where ");
-        String animals = tags.get("animals").toString();
-        String group = tags.get("group").toString();
-        String age = tags.get("age").toString();
-           if (!animals.isEmpty()){
-                   builder.append("post_ad.json_tags->'$[0].animals' = ").append(animals).append(" ");
-           }
-           if (!group.isEmpty()){
-               builder.append("and  post_ad.json_tags->'$[0].group' = ").append(group).append(" ");
-           }
-           if (!age.isEmpty()){
-               builder.append("and post_ad.json_tags->'$[0].age' = ").append(age).append(" ");
-           }
-           JsonArray ownTags = tags.get("own_tags").getAsJsonArray();
-           if (!ownTags.isJsonNull()){
-               for (int index= 0; index < ownTags.size(); index++){
-                   builder.append("and post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%',").append(ownTags.get(index)).append(",'%')");
-               }
-           }
-        builder.append(";");
-        return builder.toString();
+        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] tags: \n"+tags);
+        String animals = tags.get("animals").getAsString();
+        String group = tags.get("group").getAsString();
+        String age = tags.get("age").getAsString();
+        boolean all = true;
+        boolean first = true;
+        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] animals: \n"+tags+"\n group: "+group+"\n age: "+age);
+
+        if (!animals.isEmpty()){
+            builder.append("upper(post_ad.json_tags->'$[0].animals') LIKE upper('%").append(animals).append("%') ");
+            all = false;
+            first = false;
+        }
+
+        if (!group.isEmpty()){
+            builder.append("and  upper(post_ad.json_tags->'$[0].group') LIKE upper('%").append(group).append("%') ");
+            all = false;
+        }
+        if (!age.isEmpty()){
+            testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] age: "+age);
+            builder.append("and post_ad.json_tags->'$[0].age' = '").append(age).append("' ");
+            all = false;
+        }
+        JsonArray ownTags = tags.get("own_tags").getAsJsonArray();
+        if (!ownTags.toString().equals("[]")){//TODO rewrite this shit
+            testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] !ownTags.isJsonNull()");
+            for (int index= 0; index < ownTags.size(); index++){
+                if (first){
+                    builder.append("UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',").append(ownTags.get(index)).append(",'%')) ");
+                    first = false;
+                }else {
+                    builder.append("and UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',").append(ownTags.get(index)).append(",'%')) ");
+                }
+            }
+            all = false;
+        }
+        if (all){
+            return "select * from post_ad;";
+        }else{
+            builder.append(";");
+            return builder.toString();
+        }
     }
 }
