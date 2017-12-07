@@ -6,15 +6,15 @@ import java.util.UUID;
 public class Messages {
     private UUID idMessage;
     private UUID idDialog;
-    private UUID idOutcomigAccount;
+    private UUID idOutcomingAccount;
 
     private Timestamp date;
     private String message;
 
-    public Messages(UUID idMessage, UUID idDialog, UUID idOutcomigAccount, Timestamp date, String message) {
+    public Messages(UUID idMessage, UUID idDialog, UUID idOutcomingAccount, Timestamp date, String message) {
         this.idMessage = idMessage;
         this.idDialog = idDialog;
-        this.idOutcomigAccount = idOutcomigAccount;
+        this.idOutcomingAccount = idOutcomingAccount;
         this.date = date;
         this.message = message;
     }
@@ -34,10 +34,10 @@ public class Messages {
     }
 
     public UUID getIdOutcomigAccount() {
-        return idOutcomigAccount;
+        return idOutcomingAccount;
     }
     public void setIdOutcomigAccount(UUID idOutcomigAccount) {
-        this.idOutcomigAccount = idOutcomigAccount;
+        this.idOutcomingAccount = idOutcomigAccount;
     }
 
     public String getMessage() {

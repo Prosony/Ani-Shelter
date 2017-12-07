@@ -249,6 +249,25 @@ public class SelectQueryDB {
         return list;
 
     }
+    public Dialog getDialogByIdDialog(String idDialog){
+        Dialog dialog = null;
+        Connection connection = null;
+        try {
+            connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_dialogs = ? ;");
+            select.setString(1, idDialog);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                dialog = new Dialog(UUID.fromString(result.getString("id_dialogs")),
+                        UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming")));
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dialog;
+    }
     public ArrayList<Messages> getMessagesByIdDialog(String idDialog){
 
         ArrayList<Messages> list = new ArrayList<>();
