@@ -8,7 +8,6 @@ package services.other;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 public class OtherService {
 
     public void errorToClient(HttpServletResponse response, int answer) {

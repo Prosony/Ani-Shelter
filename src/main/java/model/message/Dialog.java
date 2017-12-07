@@ -1,36 +1,46 @@
 package model.message;
 
+import java.util.UUID;
+
 public class Dialog {
-    private int id_this_dialog;
-    private int id_from_account;
-    private int id_to_account;
 
-    public int getId_this_dialog() {
-        return id_this_dialog;
-    }
-    public void setId_this_dialog(int id_this_dialog) {
-        this.id_this_dialog = id_this_dialog;
-    }
+    private UUID idDialog;
+    private UUID idOutcomingAccount;
+    private UUID idIncomingAccount;
 
-
-    public int getId_from_account() {
-        return id_from_account;
-    }
-    public void setId_from_account(int id_from_account) {
-        this.id_from_account = id_from_account;
+    public Dialog(UUID idDialog, UUID idOutcomingAccount, UUID idIncomingAccount){
+        this.idDialog = idDialog;
+        this.idOutcomingAccount = idOutcomingAccount;
+        this.idIncomingAccount = idIncomingAccount;
     }
 
-    public int getId_to_account() {
-        return id_to_account;
+    public UUID getIdDialog() {
+        return idDialog;
     }
-    public void setId_to_account(int id_to_account) {
-        this.id_to_account = id_to_account;
+    public void setIdDialog(UUID idDialog) {
+        this.idDialog = idDialog;
     }
 
+    public UUID getIdOutcomingAccount() {
+        return idOutcomingAccount;
+    }
+    public void setIdOutcomingAccount(UUID idOutcomingAccount) {
+        this.idOutcomingAccount = idOutcomingAccount;
+    }
+
+    public UUID getIdIncomingAccount() {
+        return idIncomingAccount;
+    }
+    public void setIdIncomingAccount(UUID idIncomingAccount) {
+        this.idIncomingAccount = idIncomingAccount;
+    }
 
     @Override
     public String toString() {
-        return "id_this_dialog: "+ id_this_dialog +" id_from_account: "+ id_from_account +" id_to_account: "+ id_to_account;
+        return "{\n" +
+                "idDialog: "+idDialog.toString()+"\n" +
+                "idOutcomingAccount: "+idOutcomingAccount.toString()+"\n" +
+                "idIncomingAccount: "+idIncomingAccount.toString()+"\n" +
+                "}";
     }
-
 }

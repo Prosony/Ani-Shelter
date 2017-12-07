@@ -34,7 +34,6 @@ public class AddPostAdServlet extends HttpServlet{
 
     private TestLog testLog = TestLog.getInstance();
     private OtherService otherService = new OtherService();
-    private PostAdCache postAdCache = PostAdCache.getInstance();
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){

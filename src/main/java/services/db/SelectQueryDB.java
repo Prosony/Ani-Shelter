@@ -6,13 +6,12 @@ import com.google.gson.JsonParser;
 import memcach.AccountCache;
 import model.account.Account;
 import model.ad.PostAd;
+import model.message.Dialog;
+import model.message.Messages;
 import model.profile.Profile;
 import test.TestLog;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -223,6 +222,54 @@ public class SelectQueryDB {
         }
         return list;
     }
+
+    /**************************************************************************************************
+     *                                          MESSAGES
+     **************************************************************************************************/
+    public ArrayList<Dialog> getAllDialogsByIdAccount(UUID idAccount){
+
+        ArrayList<Dialog> list = new ArrayList<>();
+        Connection connection = null;
+        String id = idAccount.toString();
+        try {
+            connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_account_outcoming = ? OR dialogs.id_account_incoming = ?; ");
+            select.setString(1, id);
+            select.setString(2, id);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                list.add(new Dialog(UUID.fromString(result.getString("id_dialogs")),
+                        UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming"))));
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+
+    }
+    public ArrayList<Messages> getMessagesByIdDialog(String idDialog){
+
+        ArrayList<Messages> list = new ArrayList<>();
+        Connection connection = null;
+        try {
+            connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_dialog = ? ;");
+            select.setString(1, idDialog);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                list.add(new Messages(UUID.fromString(result.getString("id_message")),UUID.fromString(result.getString("id_dialog")),
+                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("date_time"), result.getString("message")
+                        ));
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
      /**************************************************************************************************
      *                                          DB SERVICE
      **************************************************************************************************/
@@ -243,12 +290,6 @@ public class SelectQueryDB {
         }
         return list;
     }
-
-//            '"animals":"null",' +
-//            '"group":"null",' +
-//            '"breeds":"null",' +
-//            '"age":"null",' +
-//            '"own_tags":[]' +
 
     private String buildQuery(JsonObject tags){
         // select * from post_ad where post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%','middle size','%');

@@ -17,7 +17,7 @@ public class RoutingFilter implements Filter {
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        testLog.sendToConsoleMessage("#INFO #TEST [class RoutingFilter]" + new Date() +", Remote address: "+request.getRemoteAddr()
+        testLog.sendToConsoleMessage("\n#INFO [FILTER] [class RoutingFilter]" + new Date() +", Remote address: "+request.getRemoteAddr()
                     +", Remote host: "+request.getRemoteHost()+", Servlet Path: " + request.getServletPath() + ", URL: " + request.getRequestURL());
         filterChain.doFilter(servletRequest, servletResponse);
     }
