@@ -7,6 +7,7 @@ import memcach.JsonWebTokenCache;
 import model.account.Account;
 import model.message.Dialog;
 import model.message.Messages;
+import services.db.InsertQueryDB;
 import services.db.SelectQueryDB;
 import test.TestLog;
 
@@ -26,6 +27,7 @@ public class MessagesSocket {
     private TestLog testLog = TestLog.getInstance();
 
     private static Map<Session, UUID> mapIdAccountBySessionSocket =  new ConcurrentHashMap<>();
+    private InsertQueryDB db = new InsertQueryDB();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token){
@@ -66,21 +68,32 @@ public class MessagesSocket {
         String idMessage = object.get("id_message").getAsString();
         String idDialog = object.get("id_dialog").getAsString();
         String idOutcomingAccount = object.get("id_outcoming_account").getAsString();
-        Timestamp dateTime = Timestamp.valueOf(object.get("date_time").getAsString());
+        Timestamp dateTime = new Timestamp(object.get("date_time").getAsLong());
         String message = object.get("message").getAsString();
-        String idLast = object.get("is_last").getAsString();
+        boolean isRead = object.get("is_read").getAsBoolean();
 
         UUID idDialogUUID = UUID.fromString(idDialog);
-        Messages messages = new Messages(UUID.fromString(idMessage), idDialogUUID, UUID.fromString(idOutcomingAccount), dateTime, message);
+        Messages messages = new Messages(UUID.fromString(idMessage), idDialogUUID, UUID.fromString(idOutcomingAccount), dateTime, message, isRead);
 
         SelectQueryDB selectQueryDB = new SelectQueryDB();
         Dialog dialog = selectQueryDB.getDialogByIdDialog(idDialog);
 
         if (dialog != null){
+
+            boolean add = db.insertMessage(messages);
             if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idOutcomingAccount))){
-                sendMessageByIdAccount(dialog.getIdIncomingAccount(), j_message);
+
+                if (add){
+                    sendMessageByIdAccount(dialog.getIdIncomingAccount(), j_message);
+                }else{
+                    testLog.sendToConsoleMessage("#INFO [SOCKET] [onMessage: ERROR] messages was not add!");
+                }
             }else{
-                sendMessageByIdAccount(dialog.getIdOutcomingAccount(), j_message);
+                if (add) {
+                    sendMessageByIdAccount(dialog.getIdOutcomingAccount(), j_message);
+                }else{
+                        testLog.sendToConsoleMessage("#INFO [SOCKET] [onMessage: ERROR] messages was not add!");
+                    }
             }
         }else{
             testLog.sendToConsoleMessage("#INFO [SOCKET] [onMessage: ERROR] dialog not found!");

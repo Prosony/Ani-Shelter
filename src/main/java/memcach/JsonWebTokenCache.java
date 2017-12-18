@@ -6,6 +6,7 @@ package memcach;
 import model.account.Account;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JsonWebTokenCache {
 
@@ -18,7 +19,7 @@ public class JsonWebTokenCache {
     private final Map<String, Account> mapOnlineAccount;
 
     private JsonWebTokenCache() {
-        mapOnlineAccount = new HashMap<>();
+        mapOnlineAccount = new ConcurrentHashMap<>();
     }
 
     public Account getAccountByJws(String compactJws) { return mapOnlineAccount.get(compactJws); }

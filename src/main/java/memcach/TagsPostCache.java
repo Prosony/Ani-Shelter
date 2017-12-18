@@ -3,6 +3,7 @@ package memcach;
 import model.tags.Tags;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TagsPostCache {
 
@@ -15,7 +16,7 @@ public class TagsPostCache {
     private final Map<UUID, ArrayList<String>> mapTags;
 
     private TagsPostCache() {
-        mapTags = new HashMap<>();
+        mapTags = new ConcurrentHashMap<>();
 
         ArrayList<String> tagsList = new ArrayList<>();
         tagsList.add("Dogs");

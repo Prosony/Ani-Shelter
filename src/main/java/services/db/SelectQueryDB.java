@@ -226,16 +226,15 @@ public class SelectQueryDB {
     /**************************************************************************************************
      *                                          MESSAGES
      **************************************************************************************************/
-    public ArrayList<Dialog> getAllDialogsByIdAccount(UUID idAccount){
+    public ArrayList<Dialog> getAllDialogsByIdAccount(String idAccount){
 
         ArrayList<Dialog> list = new ArrayList<>();
         Connection connection = null;
-        String id = idAccount.toString();
         try {
             connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_account_outcoming = ? OR dialogs.id_account_incoming = ?; ");
-            select.setString(1, id);
-            select.setString(2, id);
+            select.setString(1, idAccount);
+            select.setString(2, idAccount);
             ResultSet result = select.executeQuery();
             while (result.next()) {
                 list.add(new Dialog(UUID.fromString(result.getString("id_dialogs")),
@@ -274,12 +273,12 @@ public class SelectQueryDB {
         Connection connection = null;
         try {
             connection = dataBaseService.retrieve();
-            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_dialog = ? ;");
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_dialog = ? ORDER BY messages.timestamp;");
             select.setString(1, idDialog);
             ResultSet result = select.executeQuery();
             while (result.next()) {
                 list.add(new Messages(UUID.fromString(result.getString("id_message")),UUID.fromString(result.getString("id_dialog")),
-                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("date_time"), result.getString("message")
+                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message"), result.getBoolean("is_read")
                         ));
             }
             dataBaseService.putback(connection);
@@ -288,6 +287,83 @@ public class SelectQueryDB {
             e.printStackTrace();
         }
         return list;
+    }
+    public Messages getMessageByIdMessage(String idMessage){
+
+        Messages message = null;
+        Connection connection = null;
+        try {
+            connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_message= ? ;");
+            select.setString(1, idMessage);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                message = new Messages(UUID.fromString(result.getString("id_message")),UUID.fromString(result.getString("id_dialog")),
+                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message")
+                        , result.getBoolean("is_read"));
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+    public Messages getLastMessageByIdDialog(String idDialog){
+        Messages message = null;
+        Connection connection = null;
+        try {
+            connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement("select * from messages where messages.id_dialog = ? " +
+                    "and messages.timestamp = (select MAX(messages.timestamp) from messages);");
+            select.setString(1, idDialog);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                message = new Messages(UUID.fromString(result.getString("id_message")),UUID.fromString(result.getString("id_dialog")),
+                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message"),
+                        result.getBoolean("is_read")
+                );
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+    public int getCountUnreadMessages(String idAccount){
+        int count = 0;
+        ArrayList<Dialog> list = getAllDialogsByIdAccount(idAccount);
+
+        try {
+            Connection connection = dataBaseService.retrieve();
+            Statement stmt= connection.createStatement();
+            StringBuilder builder = new StringBuilder();
+            builder.append("select COUNT(*) from messages where is_read = false AND messages.id_outcoming_account != '").append(idAccount).append("' and (");
+
+            boolean first = true;
+            for (Dialog aList : list) {
+                if (first){
+                    builder.append(" messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
+                    first =false;
+                }else{
+                    builder.append(" OR messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
+                }
+            }
+            builder.append(");");
+            testLog.sendToConsoleMessage("INFO [SelectQueryDB] [getCountUnreadMessages] query: "+builder);
+            PreparedStatement select = connection.prepareStatement(builder.toString());
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+
+                count = result.getInt("COUNT(*)");
+            }
+            dataBaseService.putback(connection);
+            printAllConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
     }
      /**************************************************************************************************
      *                                          DB SERVICE
@@ -310,7 +386,7 @@ public class SelectQueryDB {
         return list;
     }
 
-    private String buildQuery(JsonObject tags){
+    private String buildQuery(JsonObject tags){ //TODO user can fin own post by tags, need fix this bug!
         // select * from post_ad where post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%','middle size','%');
 
         StringBuilder builder = new StringBuilder();

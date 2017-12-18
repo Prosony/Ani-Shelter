@@ -5,6 +5,7 @@ package memcach;
  */
 import model.favorites.Favorites;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FavoritesCache {
 
@@ -17,7 +18,7 @@ public class FavoritesCache {
     private final Map<UUID, ArrayList<Favorites>> mapIdAccountWithArrayListFavorites;
 
     public FavoritesCache(){
-        mapIdAccountWithArrayListFavorites = new HashMap<>();
+        mapIdAccountWithArrayListFavorites = new ConcurrentHashMap<>();
     }
 
     /**

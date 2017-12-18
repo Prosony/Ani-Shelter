@@ -2,6 +2,7 @@ package servlet.file;
 
 
 import com.google.gson.*;
+import memcach.FileCache;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import services.FileService;
@@ -23,8 +24,9 @@ import java.util.ArrayList;
 public class FileServlet extends HttpServlet {
 
     private TestLog testLog = TestLog.getInstance();
-
+    private FileCache cache = FileCache.getInstance();
     private OtherService otherService = new  OtherService();
+
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
@@ -38,12 +40,24 @@ public class FileServlet extends HttpServlet {
             int index = 0;
             for (Object aPath : path) {
 
-                testLog.sendToConsoleMessage("#TEST [class FileServlet] [INDEX]: "+index+" [PATH]: "+aPath.toString());
-                base64image.add(new String(service.getFileByPath(aPath.toString())));
-                index++;
-            }
-            if (!base64image.isEmpty()){
+                String aPathString = aPath.toString();
 
+                String base64 = cache.getFileByPath(aPathString);
+
+                if (base64 != null && !base64.isEmpty()){
+                    testLog.sendToConsoleMessage("#TEST [class FileServlet] file from cache: [INDEX]: "+index+" [PATH]: "+aPathString);
+                    base64image.add(base64);
+                    index++;
+                }else{
+                    testLog.sendToConsoleMessage("#TEST [class FileServlet] file from FS: [INDEX]: "+index+" [PATH]: "+aPathString);
+                    String file = new String(service.getFileByPath(aPathString));
+                    base64image.add(file);
+                    cache.addListFavorites(aPathString, file);
+                    index++;
+                }
+            }
+
+            if (!base64image.isEmpty()){
                 otherService.answerToClient(response, new Gson().toJson(base64image));
             }else{
                 testLog.sendToConsoleMessage("#TEST [class FileServlet] file not found");

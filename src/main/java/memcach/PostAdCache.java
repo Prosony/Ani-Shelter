@@ -7,6 +7,7 @@ package memcach;
 import model.ad.PostAd;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PostAdCache {
 
@@ -20,8 +21,8 @@ public class PostAdCache {
     private final Map<UUID, ArrayList<PostAd>> mapListPostAd;
 
     private PostAdCache(){
-        mapPostAd = new HashMap<>();
-        mapListPostAd = new HashMap<>();
+        mapPostAd = new ConcurrentHashMap<>();
+        mapListPostAd = new ConcurrentHashMap<>();
 
     }
 
