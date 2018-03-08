@@ -6,6 +6,7 @@ import model.message.Dialog;
 import model.message.Messages;
 import services.db.InsertQueryDB;
 import services.db.SelectQueryDB;
+import services.db.UpdateQueryDB;
 import test.TestLog;
 
 import javax.websocket.Session;
@@ -16,9 +17,10 @@ import java.util.UUID;
 
 public class SocketHandler {
 
-    private InsertQueryDB db = new InsertQueryDB();
+    private InsertQueryDB insertDB = new InsertQueryDB();
     private TestLog testLog = TestLog.getInstance();
     private MessageSocketCache cache = MessageSocketCache.getInstance();
+    private UpdateQueryDB updateDB = new UpdateQueryDB();
 
     public void messageHandler(String j_message, JsonObject jsonMessage){
 
@@ -36,7 +38,7 @@ public class SocketHandler {
 
         if (dialog != null){
 
-            boolean add = db.insertMessage(messages);
+            boolean add = insertDB.insertMessage(messages);
             if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idOutcomingAccount))){
 
                 if (add){
@@ -58,8 +60,10 @@ public class SocketHandler {
     public void setMessageDialogAsRead(JsonObject data){
         String idDialog = data.get("id_dialog").getAsString();
         String idReader = data.get("id_reader").getAsString();
-        
+
     }
+
+
     private void sendMessageByIdAccountIncoming(UUID idIncoming, String j_message){
         Session incoming = getSessionByIdAccount(cache.getAllSession(), idIncoming);
         if (incoming != null) {
