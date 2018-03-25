@@ -16,7 +16,7 @@ public class DataBaseService {
     private String URL;
     private String USER;
     private String PASSWORD;
-    private TestLog testLog = TestLog.getInstance();
+    private TestLog log = TestLog.getInstance();
 
     private final static DataBaseService instance = new DataBaseService();
 
@@ -36,22 +36,23 @@ public class DataBaseService {
             PASSWORD = propertiesDB.getProperty("password");
             URL = propertiesDB.getProperty("url");
 
-            testLog.sendToConsoleMessage("#TEST [class DataBaseService] URL:"+URL+" PASSWORD: "+PASSWORD+" USER: "+USER);
+            log.sendToConsoleMessage("#TEST [class DataBaseService] URL:"+URL+" PASSWORD: "+PASSWORD+" USER: "+USER);
+            //TODO create demons thread that's follow for connections and print available
         } catch (IOException e) {
-            testLog.sendToConsoleMessage("#TEST [class DataBaseService] [ERROR] get properties");
+            log.sendToConsoleMessage("#TEST [class DataBaseService] [ERROR] get properties");
             e.printStackTrace();
         }
     }
 
-    private Vector<Connection> availableConnections = new Vector<Connection>();
-    private Vector<Connection> usedConnections = new Vector<Connection>();
+    private Vector<Connection> availableConnections = new Vector<>();
+    private Vector<Connection> usedConnections = new Vector<>();
 
-    public synchronized Connection retrieve() throws SQLException {
+    public synchronized Connection retrieve() {
         Connection newConnection = null;
         if (availableConnections.size() == 0) {
             newConnection = getConnection();
         } else {
-            newConnection = (Connection) availableConnections.lastElement();
+            newConnection = availableConnections.lastElement();
             availableConnections.removeElement(newConnection);
         }
         usedConnections.addElement(newConnection);
@@ -95,7 +96,7 @@ public class DataBaseService {
     /**
      * @return the number of available connections
      */
-    public String getAvailableConnections() {
-        return ("availableConnections: " + availableConnections.size() + ", usedConnections: " + usedConnections.size());
+    public void getAvailableConnections() {
+       log.sendToConsoleMessage("#INFO [DataBaseService][getAvailableConnections] availableConnections: " + availableConnections.size() + ", usedConnections: " + usedConnections.size());
     }
 }

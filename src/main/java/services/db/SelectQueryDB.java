@@ -62,7 +62,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return account;
     }
 
@@ -91,7 +91,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return profile;
     }
     /**************************************************************************************************
@@ -112,7 +112,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return jsonTag;
     }
     public ArrayList<String> getTagsByTitle(String title){
@@ -129,7 +129,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return list;
     }
     /**************************************************************************************************
@@ -161,7 +161,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return null;
     }
     public PostAd getPostAdByIdPostAd(UUID idPostAd){
@@ -186,7 +186,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return postAd;
     }
     public ArrayList<PostAd> getPostAdPeople(UUID idAccount){
@@ -200,7 +200,7 @@ public class SelectQueryDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        printAllConnection();
+        dataBaseService.getAvailableConnections();
         return list;
     }
 
@@ -216,7 +216,7 @@ public class SelectQueryDB {
             ResultSet data = stmt.executeQuery(query);
             list = getPostAdFromJson(data);
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -241,7 +241,7 @@ public class SelectQueryDB {
                         UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming"))));
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -253,7 +253,7 @@ public class SelectQueryDB {
         Connection connection = null;
         try {
             connection = dataBaseService.retrieve();
-            PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_dialogs = ? ;");
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_dialogs = ?;");
             select.setString(1, idDialog);
             ResultSet result = select.executeQuery();
             while (result.next()) {
@@ -261,7 +261,7 @@ public class SelectQueryDB {
                         UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming")));
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -282,7 +282,7 @@ public class SelectQueryDB {
                         ));
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -303,7 +303,7 @@ public class SelectQueryDB {
                         , result.getBoolean("is_read"));
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -325,7 +325,7 @@ public class SelectQueryDB {
                 );
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -359,7 +359,7 @@ public class SelectQueryDB {
                 count = result.getInt("COUNT(*)");
             }
             dataBaseService.putback(connection);
-            printAllConnection();
+            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -368,9 +368,7 @@ public class SelectQueryDB {
      /**************************************************************************************************
      *                                          DB SERVICE
      **************************************************************************************************/
-    private void printAllConnection(){
-        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [CONNECTION] "+dataBaseService.getAvailableConnections());
-    }
+
     private ArrayList<PostAd> getPostAdFromJson(ResultSet data) throws SQLException {
         ArrayList<PostAd> list = new ArrayList<>();
         JsonParser jsonParser = new JsonParser();
@@ -386,18 +384,22 @@ public class SelectQueryDB {
         return list;
     }
 
-    private String buildQuery(JsonObject tags){ //TODO user can fin own post by tags, need fix this bug!
+    private String buildQuery(JsonObject tags){
+
+        //TODO user can fin own post by tags, need fix this bug!
         // select * from post_ad where post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%','middle size','%');
+        //TODO check breeds query!
 
         StringBuilder builder = new StringBuilder();
         builder.append("select * from post_ad where ");
         testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] tags: \n"+tags);
         String animals = tags.get("animals").getAsString();
         String group = tags.get("group").getAsString();
+        String breeds = tags.get("breeds").getAsString();
         String age = tags.get("age").getAsString();
         boolean all = true;
         boolean first = true;
-        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] animals: \n"+tags+"\n group: "+group+"\n age: "+age);
+        testLog.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] animals: \n"+tags+"\n group: "+group+"\n age: "+age);
 
         if (!animals.isEmpty()){
             builder.append("upper(post_ad.json_tags->'$[0].animals') LIKE upper('%").append(animals).append("%') ");
@@ -409,8 +411,11 @@ public class SelectQueryDB {
             builder.append("and  upper(post_ad.json_tags->'$[0].group') LIKE upper('%").append(group).append("%') ");
             all = false;
         }
+        if (!breeds.isEmpty()){
+            builder.append("and  upper(post_ad.json_tags->'$[0].breeds') LIKE upper('%").append(breeds).append("%') ");
+        }
         if (!age.isEmpty()){
-            testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] age: "+age);
+            testLog.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] age: "+age);
             builder.append("and post_ad.json_tags->'$[0].age' = '").append(age).append("' ");
             all = false;
         }

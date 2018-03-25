@@ -61,13 +61,15 @@ public class MessagesSocket {
         JsonObject object = (JsonObject)jsonParser.parse(j_message);
         String type = object.get("type").getAsString();
         JsonObject data = object.get("data").getAsJsonObject();
-        if (type.equals("message")){
-            handler.messageHandler(j_message, data);
-        }
-        if (type.equals("user_read")){
-            handler.setMessageDialogAsRead(data);
-        }
 
+        switch(type){
+            case "message":
+                handler.messageHandler(j_message, data);
+                break;
+            case "read":
+                handler.setMessageDialogAsRead(j_message,data);
+                break;
+        }
     }
 
     private void closeConnection(Session session, String reason){

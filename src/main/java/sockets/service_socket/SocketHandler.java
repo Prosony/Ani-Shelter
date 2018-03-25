@@ -57,16 +57,43 @@ public class SocketHandler {
             testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessage: ERROR] dialog not found!");
         }
     }
-    public void setMessageDialogAsRead(JsonObject data){
+
+    /**
+     * Sets the message as read
+     * @param j_package
+     * @param data
+     */
+    public void setMessageDialogAsRead(String j_package,JsonObject data){
         String idDialog = data.get("id_dialog").getAsString();
         String idReader = data.get("id_reader").getAsString();
+        //TODO set to db isRead - true
+        UpdateQueryDB update = new UpdateQueryDB();
+        boolean isRead = update.updateStatusReadMessage(idDialog,idReader);
 
+        if(isRead){
+            SelectQueryDB select = new SelectQueryDB();
+            Dialog dialog = select.getDialogByIdDialog(idDialog);
+            Session incoming;
+            if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idReader))){
+                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdIncomingAccount());
+            }else{
+                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdOutcomingAccount());
+
+            }
+            if (incoming != null && incoming.isOpen()){
+                try {
+                    incoming.getBasicRemote().sendText(j_package);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
     private void sendMessageByIdAccountIncoming(UUID idIncoming, String j_message){
         Session incoming = getSessionByIdAccount(cache.getAllSession(), idIncoming);
-        if (incoming != null) {
+        if (incoming != null && incoming.isOpen()) {
             try {
                 testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessageByIdAccountIncoming] send to account: "+idIncoming+", Session: "+incoming);
                 incoming.getBasicRemote().sendText(j_message);

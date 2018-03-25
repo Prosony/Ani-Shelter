@@ -67,31 +67,5 @@
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-websocket:8.5.16" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-websocket-api:8.5.16" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.39" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:jstl:1.2" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.1" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
-    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
-    <orderEntry type="library" name="Maven: io.jsonwebtoken:jjwt:0.7.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.2" level="project" />
-    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-catalina:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-servlet-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jsp-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-el-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-juli:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-annotations-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jni:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-coyote:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-util-scan:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jaspic-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-websocket:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-websocket-api:8.5.16" level="project" />
-    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.39" level="project" />
   </component>
 </module>
