@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/unread-messages")
 public class GetCountUnreadMessagesServlet extends HttpServlet{
 
-    private TestLog testLog = TestLog.getInstance();
+    private TestLog log = TestLog.getInstance();
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private OtherService otherService = new OtherService();
 
@@ -31,6 +31,7 @@ public class GetCountUnreadMessagesServlet extends HttpServlet{
             if (account != null) { //TODO write cache
                 SelectQueryDB selectQueryDB = new SelectQueryDB();
                 int count = selectQueryDB.getCountUnreadMessages(account.getId().toString());
+                log.sendToConsoleMessage("#INFO [GetCountUnreadMessagesServlet][/unread-messages] count unread message: "+count);
                 otherService.answerToClient(response, new Gson().toJson(count));
             }
         }

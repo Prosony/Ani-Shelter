@@ -73,11 +73,20 @@ public class DataBaseService {
      * ******************************************************************************/
     private Connection getConnection() {
         Connection connection = null;
-
         try {
+            Properties properties=new Properties();
+            properties.setProperty("user",USER);
+            properties.setProperty("password",PASSWORD);
+            properties.setProperty("useUnicode","true");
+            properties.setProperty("characterEncoding","UTF-8");
+            properties.setProperty("autoReconnect","true");
+            properties.setProperty("useSSL","false");
+//            autoReconnect=true&useSSL=false
+
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (ClassNotFoundException | SQLException e) {
+
+            connection = DriverManager.getConnection(URL,USER,PASSWORD);
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 

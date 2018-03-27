@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import memcach.JsonWebTokenCache;
 import memcach.MessageSocketCache;
 import model.account.Account;
-import java.util.UUID;
 import sockets.service_socket.SocketHandler;
 import test.TestLog;
 
@@ -19,18 +18,18 @@ import java.io.IOException;
 public class MessagesSocket {
 
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
-    private TestLog testLog = TestLog.getInstance();
+    private TestLog log = TestLog.getInstance();
     private MessageSocketCache cache = MessageSocketCache.getInstance();
 
     private SocketHandler handler = new SocketHandler ();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token){
-        testLog.sendToConsoleMessage("token : "+token);
+        log.sendToConsoleMessage("#SOCKET [MessagesSocket] token : "+token);
         if (token != null && !token.isEmpty() && !token.equals("null")) {
             Account account = tokenCache.getAccountByJws(token);
             if (account != null) {
-                testLog.sendToConsoleMessage("#INFO [SOCKET] outcoming_account: "+account.getId());
+                log.sendToConsoleMessage("#INFO [SOCKET] outcoming_account: "+account.getId());
                 cache.addAccount(session, account.getId());
             }else{
                 closeConnection(session, "204");
@@ -42,6 +41,7 @@ public class MessagesSocket {
 
     @OnClose
     public void onClose(Session session){
+
         System.out.println("Connection with user: "+session+" is closed!");
         cache.deleteAccount(session);
     }
@@ -54,7 +54,7 @@ public class MessagesSocket {
     @OnMessage
     public void onMessage(String j_message, Session session){
 
-        testLog.sendToConsoleMessage("#INFO [SOCKET] message from the client: " + j_message);
+        log.sendToConsoleMessage("#INFO [SOCKET] message from the client: " + j_message);
 //      id_message  id_dialog   id_outcoming_account    date_time  message  is_last
 
         JsonParser jsonParser = new JsonParser();
@@ -74,7 +74,7 @@ public class MessagesSocket {
 
     private void closeConnection(Session session, String reason){
         try {
-            session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "204"));
+            session.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, reason));
         } catch (IOException e) {
             e.printStackTrace();
         }

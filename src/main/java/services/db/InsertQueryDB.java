@@ -5,10 +5,7 @@ import com.google.gson.JsonObject;
 import model.message.Messages;
 import test.TestLog;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -21,12 +18,12 @@ public class InsertQueryDB {
      *                                          POST AD
      **************************************************************************************************/
 
-    public void insertPostAd(UUID idPostAd, UUID idAccount, JsonObject jsonText, JsonObject jsonTags, JsonArray jsonPathImage){
+    public void insertPostAd(UUID idPostAd, UUID idAccount, JsonObject jsonText, JsonObject jsonTags, JsonArray jsonPathImage, Timestamp timestamp){
         try {
             Connection connection = dataBaseService.retrieve();
 
-            PreparedStatement aboutUpdate = connection.prepareStatement("insert into post_ad(id, id_account, json_text, json_tags, json_path_image, json_path_avatar) " +
-                    "VALUES (?,?,?,?,? ,?);");
+            PreparedStatement aboutUpdate = connection.prepareStatement("insert into post_ad(id, id_account, json_text, json_tags, json_path_image, json_path_avatar, timestamp) " +
+                    "VALUES (?,?,?,?,? ,?,?);");
 
             aboutUpdate.setString(1, String.valueOf(idPostAd));
             aboutUpdate.setString(2, String.valueOf(idAccount));
@@ -39,7 +36,8 @@ public class InsertQueryDB {
             jsonPathAvatar.add(jsonPathImage.get(1));
 
             aboutUpdate.setString(6, String.valueOf(jsonPathAvatar));
-            aboutUpdate.execute();
+            aboutUpdate.setTimestamp(7, timestamp);
+            aboutUpdate.executeUpdate();
 
             dataBaseService.putback(connection);
 

@@ -13,7 +13,7 @@ import test.TestLog;
 import java.util.ArrayList;
 
 public class PostAdService {
-    private TestLog testLog = new TestLog();
+    private TestLog log = new TestLog();
     private PostAdCache postAdCache = PostAdCache.getInstance();
 
     public ArrayList<PostAd> getListPostAd(ArrayList<Favorites> postAd){
@@ -27,7 +27,7 @@ public class PostAdService {
                 listPostAd.add(postAdCache.getPostAdByIdPostAd(favorites.getIdFavoritesAd()));
 
             }
-            testLog.sendToConsoleMessage("[class PostAdService] [method getListPostAd] lisPostAd: "+ new Gson().toJson(listPostAd));
+            log.sendToConsoleMessage("[class PostAdService] [method getListPostAd] lisPostAd: "+ new Gson().toJson(listPostAd));
             return listPostAd;
         }
         return null;

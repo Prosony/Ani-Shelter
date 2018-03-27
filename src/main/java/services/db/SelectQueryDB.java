@@ -9,8 +9,13 @@ import model.ad.PostAd;
 import model.message.Dialog;
 import model.message.Messages;
 import model.profile.Profile;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import test.TestLog;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +24,7 @@ import java.util.UUID;
 
 public class SelectQueryDB {
 
-    private TestLog testLog = new TestLog();
+    private TestLog log = new TestLog();
     private DataBaseService dataBaseService = DataBaseService.getInstance();
     /**************************************************************************************************
      *                                          ACCOUNT -/- PROFILE
@@ -31,9 +36,12 @@ public class SelectQueryDB {
         try {
             Connection connection = dataBaseService.retrieve();
 
-            Statement stmt= connection.createStatement();
+            PreparedStatement select = connection.prepareStatement("select * from account, profile where account.email = ? AND account.password = ? AND account.id_account = profile.id;");
+            select.setString(1,email);
+            select.setString(2,password);
             ResultSet rsAccount;
-            rsAccount = stmt.executeQuery("select * from account, profile where account.email = '"+email+"' AND account.password ='"+password+"' AND account.id_account = profile.id;");
+
+            rsAccount = select.executeQuery();
 
             while (rsAccount.next()) {
                 UUID id = UUID.fromString(rsAccount.getString("id_account"));
@@ -71,9 +79,10 @@ public class SelectQueryDB {
         try {
             Connection connection = dataBaseService.retrieve();
 
-            Statement stmt= connection.createStatement();
+            PreparedStatement  select = connection.prepareStatement("select * from profile where profile.id = ?;");
+            select.setString(1,id.toString());
             ResultSet rsAccount;
-            rsAccount = stmt.executeQuery("select * from profile where profile.id = '"+id+"';");
+            rsAccount = select.executeQuery();
 
             while (rsAccount.next()) {
                 String date = rsAccount.getString("date_create_account");
@@ -102,11 +111,12 @@ public class SelectQueryDB {
         String jsonTag = null;
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
-            ResultSet rsAccount;
-            rsAccount = stmt.executeQuery("select * from tags where tags.title = '"+title+"';");
-            while (rsAccount.next()) {
-                jsonTag =rsAccount.getString("json_tag");
+            PreparedStatement select = connection.prepareStatement("select * from tags where tags.title = ?;");
+            select.setString(1,title);
+            ResultSet data;
+            data = select.executeQuery();
+            while (data.next()) {
+                jsonTag =data.getString("json_tag");
             }
             dataBaseService.putback(connection);
         } catch (SQLException e) {
@@ -119,9 +129,10 @@ public class SelectQueryDB {
         ArrayList<String> list = new ArrayList<>();
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
+            PreparedStatement select = connection.prepareStatement("select * from tags where tags.title = ?;");
+            select.setString(1,title);
             ResultSet rsAccount;
-            rsAccount = stmt.executeQuery("select * from tags where tags.title = '"+title+"';");
+            rsAccount = select.executeQuery();
             while (rsAccount.next()) {
                 list.add(rsAccount.getString("json_tag"));
             }
@@ -140,25 +151,33 @@ public class SelectQueryDB {
         ArrayList<PostAd> list = new ArrayList<>();
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
-            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account = '"+idAccount+"';");
+            PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id_account = ? ORDER BY post_ad.timestamp;");
+            select.setString(1, idAccount.toString());
+            ResultSet data = select.executeQuery();
             JsonParser jsonParser = new JsonParser();
+            JSONParser parser = new JSONParser();
             while (data.next()) {
+//                System.out.println("data.getString(\"json_text\")" + new String(data.getBytes("json_text"), "UTF-8"));
+//                System.out.println("data.getString(\"json_tags\")" + new String(data.getBytes("json_tags"), "UTF-8"));
                 UUID id = UUID.fromString(data.getString("id"));
-                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
-                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
-                JsonArray jsonPathImage  = (JsonArray)jsonParser.parse(data.getString("json_path_image"));
-                JsonArray jsonPathAvatar  = (JsonArray)jsonParser.parse(data.getString("json_path_avatar"));
-                PostAd postAd = new PostAd(id,idAccount,jsonText,jsonTags,jsonPathImage,jsonPathAvatar);
-                list.add(postAd);
+                try {
+                    JSONObject jsonText = (JSONObject) parser.parse( new String(data.getBytes("json_text"), "UTF-8"));
+                    JSONObject jsonTags = (JSONObject) parser.parse(new String(data.getBytes("json_tags"), "UTF-8"));
+                    JSONArray jsonPathImage = (JSONArray) parser.parse(data.getString("json_path_image"));
+                    JSONArray jsonPathAvatar = (JSONArray) parser.parse(data.getString("json_path_avatar"));
+                    PostAd postAd = new PostAd(id,idAccount,jsonText,jsonTags,jsonPathImage,jsonPathAvatar, data.getTimestamp("timestamp"));
+                    list.add(postAd);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             dataBaseService.putback(connection);
             if (!list.isEmpty()){
                 return list;
             }else{
-                testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [DB] list is empty");
+                log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] [DB] list is empty");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         dataBaseService.getAvailableConnections();
@@ -168,22 +187,27 @@ public class SelectQueryDB {
         PostAd postAd = null;
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
-            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id = '"+idPostAd+"';");
-            JsonParser jsonParser = new JsonParser();
+            PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id = ?;");
+            select.setString(1, idPostAd.toString());
+            ResultSet data = select.executeQuery();
+            JSONParser jsonParser = new JSONParser();
             while (data.next()) {
-                JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
-                JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
-                JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
-                JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
+                JSONObject jsonText = (JSONObject) jsonParser.parse(new String(data.getBytes("json_text"), "UTF-8"));
+                JSONObject jsonTags = (JSONObject) jsonParser.parse(new String(data.getBytes("json_tags"), "UTF-8"));
+                JSONArray jsonPathImage = (JSONArray) jsonParser.parse(data.getString("json_path_image"));
+                JSONArray jsonPathAvatar = (JSONArray) jsonParser.parse(data.getString("json_path_avatar"));
                 postAd = new PostAd(
                         UUID.fromString(data.getString("id")),UUID.fromString(data.getString("id_account")),jsonText,jsonTags,
-                        jsonPathImage,jsonPathAvatar);
+                        jsonPathImage,jsonPathAvatar, data.getTimestamp("timestamp"));
             }
             dataBaseService.putback(connection);
             return postAd;
 
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         dataBaseService.getAvailableConnections();
@@ -193,8 +217,9 @@ public class SelectQueryDB {
         ArrayList<PostAd> list = new ArrayList<>();
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
-            ResultSet data = stmt.executeQuery("select * from post_ad where post_ad.id_account != '"+idAccount+"';");
+            PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id_account != ? ORDER BY post_ad.timestamp;;");
+            select.setString(1,idAccount.toString());
+            ResultSet data = select.executeQuery();
             list = getPostAdFromJson(data);
             dataBaseService.putback(connection);
         } catch (SQLException e) {
@@ -208,7 +233,7 @@ public class SelectQueryDB {
 
         ArrayList<PostAd> list = null;
         String query = buildQuery(tags);
-        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[getPostAdByTags] query: "+query);
+        log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[getPostAdByTags] query: "+query);
         Connection connection = null;
         try {
             connection = dataBaseService.retrieve();
@@ -334,10 +359,9 @@ public class SelectQueryDB {
     public int getCountUnreadMessages(String idAccount){
         int count = 0;
         ArrayList<Dialog> list = getAllDialogsByIdAccount(idAccount);
-
         try {
             Connection connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
+            Statement stmt = connection.createStatement();
             StringBuilder builder = new StringBuilder();
             builder.append("select COUNT(*) from messages where is_read = false AND messages.id_outcoming_account != '").append(idAccount).append("' and (");
 
@@ -351,11 +375,9 @@ public class SelectQueryDB {
                 }
             }
             builder.append(");");
-            testLog.sendToConsoleMessage("INFO [SelectQueryDB] [getCountUnreadMessages] query: "+builder);
             PreparedStatement select = connection.prepareStatement(builder.toString());
             ResultSet result = select.executeQuery();
             while (result.next()) {
-
                 count = result.getInt("COUNT(*)");
             }
             dataBaseService.putback(connection);
@@ -369,17 +391,23 @@ public class SelectQueryDB {
      *                                          DB SERVICE
      **************************************************************************************************/
 
-    private ArrayList<PostAd> getPostAdFromJson(ResultSet data) throws SQLException {
+    private ArrayList<PostAd> getPostAdFromJson(ResultSet data) throws SQLException{
         ArrayList<PostAd> list = new ArrayList<>();
-        JsonParser jsonParser = new JsonParser();
+        JSONParser jsonParser = new JSONParser();
         while (data.next()) {
-            JsonObject jsonText = (JsonObject) jsonParser.parse(data.getString("json_text"));
-            JsonObject jsonTags = (JsonObject) jsonParser.parse(data.getString("json_tags"));
-            JsonArray jsonPathImage = (JsonArray) jsonParser.parse(data.getString("json_path_image"));
-            JsonArray jsonPathAvatar = (JsonArray) jsonParser.parse(data.getString("json_path_avatar"));
-            list.add(new PostAd(
-                    UUID.fromString(data.getString("id")), UUID.fromString(data.getString("id_account")), jsonText, jsonTags,
-                    jsonPathImage, jsonPathAvatar));
+//            JSONObject jsonText = null;
+            try {
+                JSONObject jsonText = (JSONObject) jsonParser.parse(new String(data.getBytes("json_text"), "UTF-8"));
+                JSONObject jsonTags = (JSONObject) jsonParser.parse(new String(data.getBytes("json_tags"), "UTF-8"));
+                JSONArray jsonPathImage = (JSONArray) jsonParser.parse(data.getString("json_path_image"));
+                JSONArray jsonPathAvatar = (JSONArray) jsonParser.parse(data.getString("json_path_avatar"));
+                list.add(new PostAd(
+                        UUID.fromString(data.getString("id")), UUID.fromString(data.getString("id_account")), jsonText, jsonTags,
+                        jsonPathImage, jsonPathAvatar, data.getTimestamp("timestamp")));
+            } catch (ParseException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
         }
         return list;
     }
@@ -388,18 +416,18 @@ public class SelectQueryDB {
 
         //TODO user can fin own post by tags, need fix this bug!
         // select * from post_ad where post_ad.json_tags->'$[0].own_tags[*]' like CONCAT('%','middle size','%');
-        //TODO check breeds query!
+        //TODO ORDER BY messages.timestamp;
 
         StringBuilder builder = new StringBuilder();
         builder.append("select * from post_ad where ");
-        testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] tags: \n"+tags);
+        log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] tags: \n"+tags);
         String animals = tags.get("animals").getAsString();
         String group = tags.get("group").getAsString();
         String breeds = tags.get("breeds").getAsString();
         String age = tags.get("age").getAsString();
         boolean all = true;
         boolean first = true;
-        testLog.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] animals: \n"+tags+"\n group: "+group+"\n age: "+age);
+        log.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] animals: \n"+tags+"\n group: "+group+"\n age: "+age);
 
         if (!animals.isEmpty()){
             builder.append("upper(post_ad.json_tags->'$[0].animals') LIKE upper('%").append(animals).append("%') ");
@@ -415,13 +443,13 @@ public class SelectQueryDB {
             builder.append("and  upper(post_ad.json_tags->'$[0].breeds') LIKE upper('%").append(breeds).append("%') ");
         }
         if (!age.isEmpty()){
-            testLog.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] age: "+age);
+            log.sendToConsoleMessage("#INFO [SelectQueryDB] [buildQuery] age: "+age);
             builder.append("and post_ad.json_tags->'$[0].age' = '").append(age).append("' ");
             all = false;
         }
         JsonArray ownTags = tags.get("own_tags").getAsJsonArray();
         if (!ownTags.toString().equals("[]")){//TODO rewrite this shit
-            testLog.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] !ownTags.isJsonNull()");
+            log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] !ownTags.isJsonNull()");
             for (int index= 0; index < ownTags.size(); index++){
                 if (first){
                     builder.append("UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',").append(ownTags.get(index)).append(",'%')) ");

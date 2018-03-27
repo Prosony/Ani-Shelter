@@ -22,9 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.UUID;
@@ -37,14 +40,21 @@ public class AddPostAdServlet extends HttpServlet{
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
-
+        try {
+            request.setCharacterEncoding("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         String jwtToken = jsonObject.get("token").toString();
         String stringText = jsonObject.get("array_text").toString();
         String stringTags = jsonObject.get("array_tags").toString();
         String stringImageBase64 = jsonObject.get("array_image").toString();
 
-        testLog.sendToConsoleMessage("jwtToken: "+jwtToken+", jsonText: "+stringText+", stringTags: "+stringTags);
+        String data = jsonObject.get("timestamp").toString();
+        Long time = Long.valueOf(data);
+        Timestamp timestamp = new Timestamp(time);
+        testLog.sendToConsoleMessage("#INFO [AddPostAdServlet][/post-content/add] jsonText: "+stringText+", stringTags: "+stringTags);
 
         JsonParser jsonParser = new JsonParser();
         JsonArray objectJsonImageBase64 = (JsonArray)jsonParser.parse(stringImageBase64);
@@ -61,7 +71,7 @@ public class AddPostAdServlet extends HttpServlet{
                 UUID idPostAd = UUID.randomUUID();
                 JsonArray jsonArrayPath = saveFileOnFS(idAccount, idPostAd, objectJsonImageBase64);
                 if (jsonArrayPath != null && !jsonArrayPath.isJsonNull()){
-                    new InsertQueryDB().insertPostAd(idPostAd,idAccount,jsonText,jsonTags,jsonArrayPath);
+                    new InsertQueryDB().insertPostAd(idPostAd,idAccount,jsonText,jsonTags,jsonArrayPath, timestamp);
                     testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] post ad was add!");
                     otherService.answerToClient(response,"true");
                 }else{

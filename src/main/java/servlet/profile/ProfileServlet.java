@@ -10,7 +10,6 @@ import memcach.JsonWebTokenCache;
 import model.account.Account;
 import model.profile.Profile;
 import org.json.simple.JSONObject;
-import services.*;
 import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -26,7 +25,7 @@ import java.util.UUID;
 @WebServlet("/profile")
 public class ProfileServlet extends HttpServlet {
 
-    private TestLog testLog = TestLog.getInstance();
+    private TestLog log = TestLog.getInstance();
     private AccountCache accountCache = AccountCache.getInstance();
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private OtherService otherService = new OtherService();
@@ -42,18 +41,19 @@ public class ProfileServlet extends HttpServlet {
             Account account = tokenCache.getAccountByJws(jwtKey);
             if (account != null){
                 if (idAccountProfile != null && !idAccountProfile.isEmpty() && !idAccountProfile.equals("null")) {
-                    testLog.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest: " +idAccountProfile);
+                    log.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest: " +idAccountProfile);
+                    log.sendToConsoleMessage("#INFO [ProfileServlet][/profile] idAccountProfile: "+idAccountProfile);
                     sendProfileById(response, UUID.fromString(idAccountProfile));
                 } else {
-                    testLog.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest is null: " +idAccountProfile);
+                    log.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest is null: " +idAccountProfile);
                     sendProfileByJWT(response, account.getId());
                 }
             }else{
-                testLog.sendToConsoleMessage("#TEST [class ProfileServlet] account not found");
+                log.sendToConsoleMessage("#TEST [class ProfileServlet] account not found");
                 otherService.errorToClient(response, 401);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] token not found");
+            log.sendToConsoleMessage("#TEST [class ProfileServlet] token not found");
             otherService.errorToClient(response,401);
         }
     }
@@ -63,7 +63,7 @@ public class ProfileServlet extends HttpServlet {
             if (profile != null){
                 otherService.answerToClient(response, new Gson().toJson(profile));
             }else{
-                testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
+                log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
                 sendProfileFromDB(response, id);
             }
     }
@@ -73,7 +73,7 @@ public class ProfileServlet extends HttpServlet {
         if (profile != null){
             otherService.answerToClient(response, new Gson().toJson(profile));
         }else {
-            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
+            log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
             sendProfileFromDB(response, id);
         }
     }
@@ -85,7 +85,7 @@ public class ProfileServlet extends HttpServlet {
         if (profile != null){
             otherService.answerToClient(response, new Gson().toJson(profile));
         }else{
-            testLog.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [DB]!");
+            log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [DB]!");
             otherService.errorToClient(response, 204);
         }
     }

@@ -2,10 +2,7 @@ package services.db;
 
 import test.TestLog;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.UUID;
 
 public class DeleteQueryDB {
@@ -18,8 +15,9 @@ public class DeleteQueryDB {
         Connection connection = null;
         try {
             connection = dataBaseService.retrieve();
-            Statement stmt= connection.createStatement();
-            result = stmt.execute("delete from post_ad where post_ad.id = '"+idPostAd+"';");
+            PreparedStatement delete = connection.prepareStatement("delete from post_ad where post_ad.id = ?;");
+            delete.setString(1, idPostAd.toString());
+            result = delete.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }

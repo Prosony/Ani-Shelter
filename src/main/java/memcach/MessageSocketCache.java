@@ -1,12 +1,13 @@
 package memcach;
 
 import javax.websocket.Session;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MessageSocketCache {
+public class MessageSocketCache { //TODO rewrite cache, bcs user can be authorized from multiple(a few sessions) devices
 
     private static MessageSocketCache instance = new MessageSocketCache();
     public static MessageSocketCache getInstance() {
@@ -23,6 +24,22 @@ public class MessageSocketCache {
     }
     public Set<Session> getAllSession(){
         return mapIdAccountBySessionSocket.keySet();
+    }
+
+    public ArrayList<Session> getAllSessionById(UUID idAccount){
+        Set<Session> list = getAllSession();
+        ArrayList<Session> result = new ArrayList<>();
+        for (Session session : list){
+            UUID id = getAccountBySessionSocket(session);
+            if (idAccount.equals(id)){
+                result.add(session);
+            }
+        }
+        if (!result.isEmpty()){
+            return result;
+        }else{
+            return null;
+        }
     }
     public void deleteAccount(Session session){
         mapIdAccountBySessionSocket.remove(session);

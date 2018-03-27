@@ -26,7 +26,7 @@ import java.util.UUID;
 public class PostAdServlet extends HttpServlet {
 
 
-    private TestLog testLog = TestLog.getInstance();
+    private TestLog log = TestLog.getInstance();
     private OtherService otherService = new OtherService();
     private PostAdCache postAdCache= PostAdCache.getInstance();
    private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
@@ -37,7 +37,7 @@ public class PostAdServlet extends HttpServlet {
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
         String jwtToken = (String) jsonObject.get("token");
         String id = (String) jsonObject.get("id");
-        testLog.sendToConsoleMessage("#TEST [class PostAdServlet] idAccount: "+id );
+        log.sendToConsoleMessage("#TEST [class PostAdServlet] idAccount: "+id );
         if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
 
             if (id != null && !id.isEmpty() && !id.equals("null")){
@@ -51,7 +51,7 @@ public class PostAdServlet extends HttpServlet {
                     if (content != null && !content.isEmpty()){
                         otherService.answerToClient(response, new Gson().toJson(content));
                     }else{
-                        testLog.sendToConsoleMessage("#TEST [class PostAdServlet] post ad not found in cache");
+                        log.sendToConsoleMessage("#TEST [class PostAdServlet] post ad not found in cache");
                         SelectQueryDB selectQueryDB = new SelectQueryDB();
 
                         ArrayList<PostAd> list =  selectQueryDB.getAllPostAdByIdAccount(idAccount);
@@ -60,15 +60,15 @@ public class PostAdServlet extends HttpServlet {
                     }
 
                 }else{
-                    testLog.sendToConsoleMessage("#TEST [class PostAdServlet] account not found");
+                    log.sendToConsoleMessage("#TEST [class PostAdServlet] account not found");
                     otherService.errorToClient(response, 401);
                 }
             }else{
-                testLog.sendToConsoleMessage("#TEST [class PostAdServlet] id account is null, id: "+id);
+                log.sendToConsoleMessage("#TEST [class PostAdServlet] id account is null, id: "+id);
                 otherService.errorToClient(response, 401);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class PostAdServlet] token not found");
+            log.sendToConsoleMessage("#TEST [class PostAdServlet] token not found");
             otherService.errorToClient(response, 401);
         }
     }

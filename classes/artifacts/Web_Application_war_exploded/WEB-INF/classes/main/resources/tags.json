@@ -1,0 +1,17 @@
+{
+  "Animals": {
+    "Pets": ["Dog", "Cat", "Bird", "Rodent", "Fish", "Other"],
+    "Farm animals":["Cow","Sheep","Chicken"]
+  },
+  "Breeds": {
+    "Dogs":["No breed","Akita"],
+    "Cats":["No breed"],
+    "Birds":["No breed"],
+    "Rodents":["No breed"],
+    "Fish":["No breed"]
+  },
+  "Age":[],
+  "Size": ["small","medium","large"],
+  "Gender": ["Males","Female","Genderless"],
+  "Other tags":[]
+}

@@ -12,6 +12,7 @@ import test.TestLog;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,13 +32,13 @@ public class SocketHandler {
         String message = jsonMessage.get("message").getAsString();
         boolean isRead = jsonMessage.get("is_read").getAsBoolean();
         UUID idDialogUUID = UUID.fromString(idDialog);
+
         Messages messages = new Messages(UUID.fromString(idMessage), idDialogUUID, UUID.fromString(idOutcomingAccount), dateTime, message, isRead);
 
         SelectQueryDB selectQueryDB = new SelectQueryDB();
         Dialog dialog = selectQueryDB.getDialogByIdDialog(idDialog);
 
         if (dialog != null){
-
             boolean add = insertDB.insertMessage(messages);
             if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idOutcomingAccount))){
 
@@ -73,36 +74,52 @@ public class SocketHandler {
         if(isRead){
             SelectQueryDB select = new SelectQueryDB();
             Dialog dialog = select.getDialogByIdDialog(idDialog);
-            Session incoming;
+            UUID id;
+//            Session incoming;
             if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idReader))){
-                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdIncomingAccount());
+                id = dialog.getIdIncomingAccount();
+                //                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdIncomingAccount());
             }else{
-                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdOutcomingAccount());
+                id = dialog.getIdOutcomingAccount();
+//                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdOutcomingAccount());
 
             }
-            if (incoming != null && incoming.isOpen()){
-                try {
-                    incoming.getBasicRemote().sendText(j_package);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            ArrayList<Session> list = cache.getAllSessionById(id);
+            if (list != null){
+                for (Session session : list){
+                    if (session != null && session.isOpen()){
+                        try {
+                            session .getBasicRemote().sendText(j_package);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+
             }
+
         }
     }
 
 
-    private void sendMessageByIdAccountIncoming(UUID idIncoming, String j_message){
-        Session incoming = getSessionByIdAccount(cache.getAllSession(), idIncoming);
-        if (incoming != null && incoming.isOpen()) {
-            try {
-                testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessageByIdAccountIncoming] send to account: "+idIncoming+", Session: "+incoming);
-                incoming.getBasicRemote().sendText(j_message);
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void sendMessageByIdAccountIncoming(UUID idIncoming, String j_message){ //Must send package to all
+        ArrayList<Session> list = cache.getAllSessionById(idIncoming);
+//        Session incoming = getSessionByIdAccount(cache.getAllSession(), idIncoming);
+        if (list != null){
+            for (Session session : list){
+                if (session != null && session.isOpen()) {
+                    try {
+                        testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessageByIdAccountIncoming] send to account: "+idIncoming+", Session: "+session);
+                        session.getBasicRemote().sendText(j_message);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessageBySession: ERROR] session not found, may be user offline!");
+                }
             }
-        }else {
-            testLog.sendToConsoleMessage("#INFO [MessageHandler] [sendMessageBySession: ERROR] session not found, may be user offline!");
         }
+
     }
 
     private Session getSessionByIdAccount(Set<Session> list, UUID idAccount){
