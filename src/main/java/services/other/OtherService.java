@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class OtherService {
 
-    public void errorToClient(HttpServletResponse response, int answer) {
+    public void sendToClient(HttpServletResponse response, int answer) {
         try {
 
             response.setCharacterEncoding("UTF-8");

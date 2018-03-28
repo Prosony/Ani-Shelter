@@ -24,10 +24,10 @@ public class GetCountUnreadMessagesServlet extends HttpServlet{
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonHandler = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = jsonHandler.get("token").toString();
+        String token = jsonHandler.get("token").toString();
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equalsIgnoreCase("null")) {
-            Account account = tokenCache.getAccountByJws(jwtToken);
+        if (token != null && !token.isEmpty() && !token.equalsIgnoreCase("null")) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) { //TODO write cache
                 SelectQueryDB selectQueryDB = new SelectQueryDB();
                 int count = selectQueryDB.getCountUnreadMessages(account.getId().toString());

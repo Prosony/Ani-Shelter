@@ -5,7 +5,6 @@ import memcach.AccountCache;
 import memcach.JsonWebTokenCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
-import services.JWTService;
 import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -29,12 +28,12 @@ public class TagsCategoryServlet extends HttpServlet {
 
         JsonHandler jsonHandler = new JsonHandler();
         JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
-        String jwtKey = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         String title = (String) jsonObject.get("title");
 
-        if (jwtKey != null && !jwtKey.isEmpty()) {
+        if (token != null && !token.isEmpty()) {
             if(title != null && !title.isEmpty() && !title.equals("null")){
-                Account account = tokenCache.getAccountByJws(jwtKey);
+                Account account = tokenCache.getAccountByJws(token);
                 if (account != null) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
                     String  jsonTag = selectQueryDB.getTagCategoryByTitle(title); //TODO rewrite this shit
@@ -42,16 +41,16 @@ public class TagsCategoryServlet extends HttpServlet {
                     if (jsonTag != null && !jsonTag.isEmpty() && !jsonTag.equals("null")){
                         otherService.answerToClient(response, new Gson().toJson(jsonTag));
                     }else{
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
                 }else{
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else{
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
-            otherService.errorToClient(response, 204);
+            otherService.sendToClient(response, 204);
         }
     }
 }

@@ -13,7 +13,6 @@ import model.account.Account;
 import model.ad.PostAd;
 import model.favorites.Favorites;
 import org.json.simple.JSONObject;
-import services.*;
 import services.ad.PostAdService;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -38,10 +37,10 @@ public class FavoritesServlet extends HttpServlet {
 
         JsonHandler jsonHandler = new JsonHandler();
         JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
-        String jwtKey = (String) jsonObject.get("token");
+        String token = jsonObject.get("token").toString();
 
-        if (jwtKey!= null && !jwtKey.equals("") && !jwtKey.equals("null")){
-            Account account = tokenCache.getAccountByJws(jwtKey);
+        if (token!= null && !token.equals("") && !token.equals("null")){
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) {
 
                 PostAdService postAdService = new PostAdService();
@@ -57,15 +56,15 @@ public class FavoritesServlet extends HttpServlet {
                     otherService.answerToClient(response, new Gson().toJson(listPostAd));
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] favorites list is empty");
-                    otherService.errorToClient(response, 204);
+                    otherService.sendToClient(response, 204);
                 }
             }else{
                 testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] account not found");
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class FavoritesServlet] [FAIL] token not found");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
     }
 }

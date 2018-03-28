@@ -28,15 +28,15 @@ public class OnePostAdServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         UUID id = UUID.fromString((String) jsonObject.get("id"));
         testLog.sendToConsoleMessage("#TEST [class PostAdServlet] idAccount: " + id);
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
 
             if (id != null && !id.toString().isEmpty() && !id.toString().equals("null")) {
 
-                Account account = tokenCache.getAccountByJws(jwtToken);
+                Account account = tokenCache.getAccountByJws(token);
 
                 if (account != null) {
                     PostAd postAd = getPostId(id);
@@ -46,19 +46,19 @@ public class OnePostAdServlet extends HttpServlet {
                     }else{
 
                         testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] post ad not found");
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] account not found");
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else{
                 testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] id post ad not found");
-                otherService.errorToClient(response, 204);
+                otherService.sendToClient(response, 204);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class OnePostAdServlet] token not found");
-            otherService.errorToClient(response, 204);
+            otherService.sendToClient(response, 204);
         }
     }
     private PostAd getPostId(UUID idPostAd){

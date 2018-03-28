@@ -26,5 +26,18 @@ public class AccountService {
         }
         return null;
     }
+    public boolean checkData(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, String dateCreateAccount){
+        boolean allRight = true;
 
+        if (email == null || email.isEmpty()) allRight = false;
+        if (password == null || password.isEmpty()) allRight = false;
+        if (name == null || name.isEmpty()) allRight = false;
+        if (surname == null || surname.isEmpty()) allRight = false;
+        if (phone == null || phone.isEmpty()) allRight = false;
+        if (birthday == null || birthday.isEmpty()) allRight = false;
+        if (pathToAvatar == null || pathToAvatar.isEmpty()) allRight = false;
+        if (about == null || about.isEmpty()) allRight = false;
+        if (dateCreateAccount == null || dateCreateAccount.isEmpty()) allRight = false;
+        return allRight;
+    }
 }

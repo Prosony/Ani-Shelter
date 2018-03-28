@@ -6,12 +6,11 @@ import model.message.Messages;
 import test.TestLog;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class InsertQueryDB {
 
-    private TestLog testLog = new TestLog();
+    private TestLog log = new TestLog();
     private DataBaseService dataBaseService = DataBaseService.getInstance();
 
     /**************************************************************************************************
@@ -62,7 +61,7 @@ public class InsertQueryDB {
             insertMessage.setString(5, message.getMessage());
             insertMessage.setBoolean(6, message.getIsRead());
             insertMessage.executeUpdate();
-            testLog.sendToConsoleMessage("#INFO []InsertQueryDB] [insertMessage] [SUCCESS] message add to DB, idMessage: "+message.getIdMessage());
+            log.sendToConsoleMessage("#INFO [InsertQueryDB][insertMessage] [SUCCESS] message add to DB, idMessage: "+message.getIdMessage());
             dataBaseService.putback(connection);
             return true;
         } catch (SQLException e) {
@@ -70,5 +69,34 @@ public class InsertQueryDB {
         }
         return false;
     }
-
+    /**************************************************************************************************
+     *                                          Account
+     **************************************************************************************************/
+    public void insertAccount(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, String dateCreateAccount){
+        Connection connection = dataBaseService.retrieve();
+        try {
+            PreparedStatement insert = connection.prepareStatement("insert into account(id_account, email, password) VALUES (?,?,?)");
+            String idAccount = String.valueOf(UUID.randomUUID());
+            insert.setString(1, idAccount);
+            insert.setString(2, email);
+            insert.setString(3, password);
+            int result = insert.executeUpdate();
+            insert = connection.prepareStatement("INSERT INTO profile(id, date_create_account, name, surname, email, phone, birthday, path_avatar, about) VALUES " +
+                    "(?,?,?,?,?,?,?,?,?)");
+            insert.setString(1,idAccount);
+            insert.setString(2,dateCreateAccount);
+            insert.setString(3,name);
+            insert.setString(4,surname);
+            insert.setString(5,email);
+            insert.setString(6,phone);
+            insert.setString(7,birthday);
+            insert.setString(8,pathToAvatar);
+            insert.setString(9,about);
+            insert.executeUpdate();
+            log.sendToConsoleMessage("#INFO [InsertQueryDB][insertAccount] [SUCCESS] id account: "+idAccount);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dataBaseService.putback(connection);
+    }
 }

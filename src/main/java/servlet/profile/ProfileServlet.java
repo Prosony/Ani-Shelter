@@ -34,11 +34,11 @@ public class ProfileServlet extends HttpServlet {
 
             JsonHandler jsonHandler = new JsonHandler();
             JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
-            String jwtKey = (String) jsonObject.get("token");
+            String token = jsonObject.get("token").toString();
             String idAccountProfile = (String) jsonObject.get("id");
 
-        if (jwtKey != null && !jwtKey.isEmpty()) {
-            Account account = tokenCache.getAccountByJws(jwtKey);
+        if (token != null && !token.isEmpty()) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null){
                 if (idAccountProfile != null && !idAccountProfile.isEmpty() && !idAccountProfile.equals("null")) {
                     log.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest: " +idAccountProfile);
@@ -46,19 +46,19 @@ public class ProfileServlet extends HttpServlet {
                     sendProfileById(response, UUID.fromString(idAccountProfile));
                 } else {
                     log.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest is null: " +idAccountProfile);
-                    sendProfileByJWT(response, account.getId());
+                    sendProfileByToken(response, account.getId());
                 }
             }else{
                 log.sendToConsoleMessage("#TEST [class ProfileServlet] account not found");
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
             log.sendToConsoleMessage("#TEST [class ProfileServlet] token not found");
-            otherService.errorToClient(response,401);
+            otherService.sendToClient(response,401);
         }
     }
 
-    private void sendProfileByJWT(HttpServletResponse response, UUID id){
+    private void sendProfileByToken(HttpServletResponse response, UUID id){
             Profile profile = accountCache.getProfileById(id);
             if (profile != null){
                 otherService.answerToClient(response, new Gson().toJson(profile));
@@ -71,6 +71,7 @@ public class ProfileServlet extends HttpServlet {
     private void sendProfileById(HttpServletResponse response, UUID id){
         Profile profile = accountCache.getProfileById(id);
         if (profile != null){
+            log.sendToConsoleMessage("#INFO [ProfileServlet][sendProfileById]: "+profile);
             otherService.answerToClient(response, new Gson().toJson(profile));
         }else {
             log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [CACHE]!");
@@ -83,10 +84,11 @@ public class ProfileServlet extends HttpServlet {
         SelectQueryDB selectQueryDB = new SelectQueryDB();
         profile =selectQueryDB.getProfileById(id);
         if (profile != null){
+//            log.sendToConsoleMessage("#INFO [ProfileServlet][sendProfileFromDB]: "+profile);
             otherService.answerToClient(response, new Gson().toJson(profile));
         }else{
-            log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [DB]!");
-            otherService.errorToClient(response, 204);
+//            log.sendToConsoleMessage("#TEST [class ProfileServlet] method [sendProfileById] account not found in [DB]!");
+            otherService.sendToClient(response, 204);
         }
     }
 }

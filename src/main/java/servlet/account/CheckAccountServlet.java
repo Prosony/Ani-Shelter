@@ -22,7 +22,6 @@ public class CheckAccountServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) {
 
         UUID id = UUID.fromString((String) new JsonHandler().getJsonFromRequest(request).get("id"));
-
         if (id != null && !id.toString().isEmpty() && !id.toString().equals("null")) {
             Account account = accountCache.getAccountById(id);
             if (account != null) {

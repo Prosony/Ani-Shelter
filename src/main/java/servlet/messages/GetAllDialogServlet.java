@@ -22,10 +22,10 @@ public class GetAllDialogServlet extends HttpServlet{
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
-        String jwtToken = new JsonHandler().getJsonFromRequest(request).get("token").toString();
+        String token = new JsonHandler().getJsonFromRequest(request).get("token").toString();
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
-            Account account = tokenCache.getAccountByJws(jwtToken);
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) { //TODO write cache
                 SelectQueryDB selectQueryDB = new SelectQueryDB();
                 ArrayList<Dialog> list = selectQueryDB.getAllDialogsByIdAccount(account.getId().toString());

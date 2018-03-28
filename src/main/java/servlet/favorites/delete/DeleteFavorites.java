@@ -31,13 +31,13 @@ public class DeleteFavorites extends HttpServlet{
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         UUID idPostAd = UUID.fromString((String) jsonObject.get("id"));
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
             if (idPostAd != null && !idPostAd.toString().isEmpty() &&  !idPostAd.toString().equals("null")) {
 
-                Account account = tokenCache.getAccountByJws(jwtToken);
+                Account account = tokenCache.getAccountByJws(token);
                 if (account != null){
                     UUID idAccount = account.getId();
                     ArrayList<Favorites> favorites = favoritesCache.getListFavoritesByIdAccount(idAccount);
@@ -53,15 +53,15 @@ public class DeleteFavorites extends HttpServlet{
 
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] account not found");
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else{
                 testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] id friend not found");
-                otherService.errorToClient(response, 400);
+                otherService.sendToClient(response, 400);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class DeleteFriend] [FAIL] token not found");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
 
     }

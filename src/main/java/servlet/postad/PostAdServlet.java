@@ -35,14 +35,14 @@ public class PostAdServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         String id = (String) jsonObject.get("id");
         log.sendToConsoleMessage("#TEST [class PostAdServlet] idAccount: "+id );
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
 
             if (id != null && !id.isEmpty() && !id.equals("null")){
                 UUID idAccount = UUID.fromString(id);
-                Account account = tokenCache.getAccountByJws(jwtToken);
+                Account account = tokenCache.getAccountByJws(token);
 
                 if (account != null) {
 
@@ -61,15 +61,15 @@ public class PostAdServlet extends HttpServlet {
 
                 }else{
                     log.sendToConsoleMessage("#TEST [class PostAdServlet] account not found");
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else{
                 log.sendToConsoleMessage("#TEST [class PostAdServlet] id account is null, id: "+id);
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
             log.sendToConsoleMessage("#TEST [class PostAdServlet] token not found");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
     }
 }

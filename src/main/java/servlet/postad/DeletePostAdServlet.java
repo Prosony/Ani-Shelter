@@ -31,12 +31,12 @@ public class DeletePostAdServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         UUID idPostAd  = UUID.fromString(jsonObject.get("id").toString());
 
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
-            Account account = tokenCache.getAccountByJws(jwtToken);
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) {
                 UUID idAccount = account.getId();
 
@@ -69,20 +69,20 @@ public class DeletePostAdServlet extends HttpServlet {
                         testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] [SUCCESS] post ad was delete!");
                     }else{
                         testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] post not found");
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] idPostAd is null , idPostAd: "+idPostAd);
-                    otherService.errorToClient(response,400);
+                    otherService.sendToClient(response,400);
                 }
 
 
             }else{
                 testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] account not found");
-                otherService.errorToClient(response,401);
+                otherService.sendToClient(response,401);
             }
         }else {
-            otherService.errorToClient(response,401);
+            otherService.sendToClient(response,401);
             testLog.sendToConsoleMessage("#TEST [class DeletePostAdServlet] token not found");
         }
     }

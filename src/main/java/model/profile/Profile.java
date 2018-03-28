@@ -38,6 +38,9 @@ public class Profile {
     public LocalDate getDateCreateAccount() {
         return dateCreateAccount;
     }
+    public void setDateCreateAccount(LocalDate dateCreateAccount) {
+        this.dateCreateAccount = dateCreateAccount;
+    }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -75,6 +78,6 @@ public class Profile {
 
     @Override
     public String toString() {
-        return "ID: " + getId() + " Name: " + getName() + " Surname: " + getSurname() + " Birthday: " + getBirthday() + " Path Avatar: " + getPathAvatar();
+        return "ID: " + getId() + " Name: " + getName() + " Surname: " + getSurname() + " Birthday: " + getBirthday() + " Path Avatar: " + getPathAvatar() + " data create account: "+getDateCreateAccount();
     }
 }

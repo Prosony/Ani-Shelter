@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
 
 @WebServlet("/all-post-ad")
 public class PeopleAdServlet extends HttpServlet {
@@ -33,11 +31,11 @@ public class PeopleAdServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
 
-            Account account = tokenCache.getAccountByJws(jwtToken);
+            Account account = tokenCache.getAccountByJws(token);
 
             if (account != null) {
                 SelectQueryDB selectQueryDB = new SelectQueryDB();
@@ -45,11 +43,11 @@ public class PeopleAdServlet extends HttpServlet {
                 otherService.answerToClient(response, new Gson().toJson(list));
             }else{
                 testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] Account not found");
-                otherService.errorToClient(response,401);
+                otherService.sendToClient(response,401);
             }
         }else {
             testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] Token not found");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
     }
 }
@@ -75,11 +73,11 @@ public class PeopleAdServlet extends HttpServlet {
 //        otherService.answerToClient(response, new Gson().toJson(listAd));
 //        }else{
 //        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] ad people not found (null or empty)");
-//        otherService.errorToClient(response,204);
+//        otherService.sendToClient(response,204);
 //        }
 //
 //        }else{
 //        testLog.sendToConsoleMessage("#TEST [class PeopleAdServlet] not found post ad in cache");
 //
-//        otherService.errorToClient(response,204);
+//        otherService.sendToClient(response,204);
 //        }

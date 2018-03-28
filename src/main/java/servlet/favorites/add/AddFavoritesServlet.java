@@ -36,13 +36,13 @@ public class AddFavoritesServlet extends HttpServlet{
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         UUID idPostAd = UUID.fromString((String) jsonObject.get("id"));
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
             if (idPostAd != null && !idPostAd.toString().isEmpty() &&  !idPostAd.toString().equals("null")) {
 
-                Account account = tokenCache.getAccountByJws(jwtToken);
+                Account account = tokenCache.getAccountByJws(token);
 
                 if (account != null) {
 
@@ -65,21 +65,21 @@ public class AddFavoritesServlet extends HttpServlet{
                         }
                     }else{
                         testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] post ad not found");
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
 
 
                 } else {
                     testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] account not found");
-                    otherService.errorToClient(response, 204);
+                    otherService.sendToClient(response, 204);
                 }
             }else {
                 testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] id is empty");
-                otherService.errorToClient(response,204);
+                otherService.sendToClient(response,204);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class AddFavoritesServlet] [FAIL] token not found");
-            otherService.errorToClient(response,401);
+            otherService.sendToClient(response,401);
         }
 
     }

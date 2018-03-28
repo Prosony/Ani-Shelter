@@ -29,13 +29,13 @@ public class SearchPostAdServlet extends HttpServlet {
 
         JsonHandler jsonHandler = new JsonHandler();
         JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
-        String jwtKey = (String) jsonObject.get("token");
+        String token = jsonObject.get("token").toString();
 
         String stringTags = jsonObject.get("json_tags").toString();
 
-        if (jwtKey != null && !jwtKey.isEmpty()) {
+        if (token != null && !token.isEmpty()) {
             if (stringTags != null && !stringTags.isEmpty() && !stringTags.equals("null")) {
-                Account account = tokenCache.getAccountByJws(jwtKey);
+                Account account = tokenCache.getAccountByJws(token);
                 if (account != null) {
                     JsonParser jsonParser = new JsonParser();
                     JsonObject jsonTags = (JsonObject)jsonParser.parse(stringTags);
@@ -47,18 +47,18 @@ public class SearchPostAdServlet extends HttpServlet {
                         otherService.answerToClient(response, new Gson().toJson(list));
                     }else{
                         testLog.sendToConsoleMessage("#INFO [SearchPostAdServlet] [WARNING] post ad by tags not found!");
-                        otherService.errorToClient(response, 204);                    }
+                        otherService.sendToClient(response, 204);                    }
                 }else{
                     testLog.sendToConsoleMessage("#INFO [SearchPostAdServlet] [WARNING] account by token not found!");
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else {
                 testLog.sendToConsoleMessage("#INFO [SearchPostAdServlet] [WARNING] string tags is empty!");
-                otherService.errorToClient(response, 204);
+                otherService.sendToClient(response, 204);
             }
         }else{
             testLog.sendToConsoleMessage("#INFO [SearchPostAdServlet] [WARNING] token is empty!");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
     }
 

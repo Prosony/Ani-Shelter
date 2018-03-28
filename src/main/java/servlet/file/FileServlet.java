@@ -4,7 +4,6 @@ package servlet.file;
 import com.google.gson.*;
 import memcach.FileCache;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import services.FileService;
 import services.other.OtherService;
 import services.json.JsonHandler;
@@ -40,16 +39,16 @@ public class FileServlet extends HttpServlet {
             int index = 0;
             for (Object aPath : path) {
 
-                String aPathString = aPath.toString();
+                String aPathString = aPath.toString(); //TODO NullPointerException
 
                 String base64 = cache.getFileByPath(aPathString);
 
                 if (base64 != null && !base64.isEmpty()){
-                    testLog.sendToConsoleMessage("#TEST [class FileServlet] file from cache: [INDEX]: "+index+" [PATH]: "+aPathString);
+                    testLog.sendToConsoleMessage("#INFO [FileServlet] file from cache: [INDEX]: "+index+" [PATH]: "+aPathString);
                     base64image.add(base64);
                     index++;
                 }else{
-                    testLog.sendToConsoleMessage("#TEST [class FileServlet] file from FS: [INDEX]: "+index+" [PATH]: "+aPathString);
+                    testLog.sendToConsoleMessage("#INFO [FileServlet] file from FS: [INDEX]: "+index+" [PATH]: "+aPathString);
                     String file = new String(service.getFileByPath(aPathString));
                     base64image.add(file);
                     cache.addListFavorites(aPathString, file);
@@ -60,12 +59,12 @@ public class FileServlet extends HttpServlet {
             if (!base64image.isEmpty()){
                 otherService.answerToClient(response, new Gson().toJson(base64image));
             }else{
-                testLog.sendToConsoleMessage("#TEST [class FileServlet] file not found");
-                otherService.errorToClient(response,204);
+                testLog.sendToConsoleMessage("#INFO [FileServlet] file not found");
+                otherService.sendToClient(response,204);
             }
         }else{
-            testLog.sendToConsoleMessage("#TEST [class FileServlet] path is empty");
-            otherService.errorToClient(response,400);
+            testLog.sendToConsoleMessage("#INFO [FileServlet] path is empty");
+            otherService.sendToClient(response,400);
         }
     }
 

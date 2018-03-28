@@ -27,11 +27,11 @@ public class GetLastMessageDialogServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
         JSONObject jsonHandler = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = jsonHandler.get("token").toString();
+        String token = jsonHandler.get("token").toString();
         String idDialog = jsonHandler.get("id_dialog").toString();
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equalsIgnoreCase("null")) {
-            Account account = tokenCache.getAccountByJws(jwtToken);
+        if (token != null && !token.isEmpty() && !token.equalsIgnoreCase("null")) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) { //TODO write cache
                 if (idDialog != null && !idDialog.isEmpty() && !idDialog.equalsIgnoreCase("null")) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
@@ -41,7 +41,7 @@ public class GetLastMessageDialogServlet extends HttpServlet {
                         otherService.answerToClient(response, new Gson().toJson(message));
                     }else{
                         testLog.sendToConsoleMessage("#INFO [GetLastMessageDialogServlet] [ERROR] message not found!");
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
                 }
             }

@@ -7,9 +7,9 @@ package servlet.postad;
 
 import com.google.gson.*;
 import memcach.JsonWebTokenCache;
-import memcach.PostAdCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
+import services.FileService;
 import services.db.InsertQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -24,12 +24,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Random;
 import java.util.UUID;
 
 @WebServlet("/post-content/add")
@@ -46,7 +43,7 @@ public class AddPostAdServlet extends HttpServlet{
             e.printStackTrace();
         }
         JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-        String jwtToken = jsonObject.get("token").toString();
+        String token = jsonObject.get("token").toString();
         String stringText = jsonObject.get("array_text").toString();
         String stringTags = jsonObject.get("array_tags").toString();
         String stringImageBase64 = jsonObject.get("array_image").toString();
@@ -64,77 +61,28 @@ public class AddPostAdServlet extends HttpServlet{
         LocalDate date = LocalDate.now();
         jsonText.addProperty("date", date.getDayOfMonth()+"."+date.getMonthValue()+"."+date.getYear());
 
-        if (jwtToken != null && !jwtToken.isEmpty() && !jwtToken.equals("null")) {
-            Account account = tokenCache.getAccountByJws(jwtToken);
+        if (token != null && !token.isEmpty() && !token.equals("null")) {
+            Account account = tokenCache.getAccountByJws(token);
             if (account != null) {
                 UUID idAccount = account.getId();
                 UUID idPostAd = UUID.randomUUID();
-                JsonArray jsonArrayPath = saveFileOnFS(idAccount, idPostAd, objectJsonImageBase64);
+                JsonArray jsonArrayPath = new FileService().saveArrayFileOnFS(idAccount, idPostAd, objectJsonImageBase64);
                 if (jsonArrayPath != null && !jsonArrayPath.isJsonNull()){
                     new InsertQueryDB().insertPostAd(idPostAd,idAccount,jsonText,jsonTags,jsonArrayPath, timestamp);
                     testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] post ad was add!");
                     otherService.answerToClient(response,"true");
                 }else{
                     testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] jsonArrayPath.isJsonNull()");
-                    otherService.errorToClient(response, 500);
+                    otherService.sendToClient(response, 500);
                 }
             }else{
                 testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] account not found");
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] token not found");
-            otherService.errorToClient(response, 401);
+            otherService.sendToClient(response, 401);
         }
     }
-    private JsonArray saveFileOnFS(UUID idAccount, UUID idPostAd, JsonArray objectJsonImageBase64){
 
-        JsonArray resultArray = new JsonArray();
-
-        boolean isCreated;
-        try {
-            isCreated = createFolder(idAccount, idPostAd);
-            if (isCreated){
-                String path = "E:/file/"+idAccount+"/"+idPostAd;
-                for(int index = 0; index < objectJsonImageBase64.size(); index++){
-
-                    resultArray.add(path+"/"+UUID.randomUUID()+".txt");
-
-                    File newTextFile = new File(resultArray.get(index).getAsString());
-                    FileWriter fw = new FileWriter(newTextFile);
-                    fw.write(objectJsonImageBase64.get(index).getAsString());
-                    fw.close();
-                }
-                testLog.sendToConsoleMessage("resultArray: "+resultArray);
-                return resultArray;
-            }else{
-                testLog.sendToConsoleMessage("#TEST [class AddPostAdServlet] [saveFileOnFS] [ERROR]: Something wrong with path [E:/file/"+idAccount+"/"+idPostAd+"]");
-            }
-        } catch (IOException iox) {
-            iox.printStackTrace();
-        }
-        return null;
-    }
-
-    private boolean createFolder(UUID idAccount, UUID idPostAd){
-        boolean isFirst = false;
-        boolean isSecond = false;
-        String pathFirst = "E:/file/"+idAccount;
-        String pathSecond = "E:/file/"+idAccount+"/"+idPostAd;
-
-        if ( !Files.exists(Paths.get(pathFirst)) ) {
-            File folder = new File(pathFirst);
-            isFirst = folder.mkdir();
-        }else{
-            isFirst = true;
-        }
-        if ( !Files.exists(Paths.get(pathSecond)) ) {
-            File folder = new File(pathSecond);
-            isSecond = folder.mkdir();
-        }else{
-            isSecond = true;
-        }
-        System.out.println("#INFO [AddPostAdServlet] [createFolder] isFirst: "+isFirst+" isSecond: "+isSecond);
-        return (isFirst && isSecond);
-    }
 }

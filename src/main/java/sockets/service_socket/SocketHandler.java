@@ -75,14 +75,10 @@ public class SocketHandler {
             SelectQueryDB select = new SelectQueryDB();
             Dialog dialog = select.getDialogByIdDialog(idDialog);
             UUID id;
-//            Session incoming;
             if (dialog.getIdOutcomingAccount().equals(UUID.fromString(idReader))){
                 id = dialog.getIdIncomingAccount();
-                //                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdIncomingAccount());
             }else{
                 id = dialog.getIdOutcomingAccount();
-//                incoming = getSessionByIdAccount(cache.getAllSession(),dialog.getIdOutcomingAccount());
-
             }
             ArrayList<Session> list = cache.getAllSessionById(id);
             if (list != null){
@@ -104,7 +100,6 @@ public class SocketHandler {
 
     private void sendMessageByIdAccountIncoming(UUID idIncoming, String j_message){ //Must send package to all
         ArrayList<Session> list = cache.getAllSessionById(idIncoming);
-//        Session incoming = getSessionByIdAccount(cache.getAllSession(), idIncoming);
         if (list != null){
             for (Session session : list){
                 if (session != null && session.isOpen()) {
@@ -133,5 +128,4 @@ public class SocketHandler {
         }
         return result;
     }
-
 }

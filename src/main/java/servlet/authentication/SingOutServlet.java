@@ -4,7 +4,6 @@ package servlet.authentication;
  * @since 0.0.1
  */
 import memcach.JsonWebTokenCache;
-import org.json.simple.JSONObject;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;
@@ -24,19 +23,19 @@ public class SingOutServlet extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
 
-        String tokenJws = (String) new JsonHandler().getJsonFromRequest(request).get("token");
+        String token = (String) new JsonHandler().getJsonFromRequest(request).get("token");
 
-        if (tokenJws != null && !tokenJws.equals("")){
-            if(tokenCache.getAccountByJws(tokenJws) != null) {
-                tokenCache.deleteJws(tokenJws);
+        if (token != null && !token.equals("")){
+            if(tokenCache.getAccountByJws(token) != null) {
+                tokenCache.deleteJws(token);
                 testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Token was deleted from cache ");
             }else{
                 testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Can't find account by token");
-                otherService.errorToClient(response,204);
+                otherService.sendToClient(response,204);
             }
         }else{
             testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Token was not found");
-            otherService.errorToClient(response,401);
+            otherService.sendToClient(response,401);
         }
     }
 

@@ -1,13 +1,8 @@
 package servlet.tags;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-import memcach.AccountCache;
 import memcach.JsonWebTokenCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
-import services.JWTService;
 import services.db.SelectQueryDB;
 import services.json.JsonHandler;
 import services.other.OtherService;
@@ -29,13 +24,13 @@ public class TagsOwnServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response){
         JsonHandler jsonHandler = new JsonHandler();
         JSONObject jsonObject = jsonHandler.getJsonFromRequest(request);
-        String jwtKey = (String) jsonObject.get("token");
+        String token = (String) jsonObject.get("token");
         String title = jsonObject.get("title").toString();
 
 
-        if (jwtKey != null && !jwtKey.isEmpty()) {
+        if (token != null && !token.isEmpty()) {
             if(title != null && !title.isEmpty() && !title.equals("null")){
-                Account account = tokenCache.getAccountByJws(jwtKey);
+                Account account = tokenCache.getAccountByJws(token);
                 if (account != null) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
                     ArrayList<String> list = selectQueryDB.getTagsByTitle(title);
@@ -45,16 +40,16 @@ public class TagsOwnServlet extends HttpServlet {
                         otherService.answerToClient(response, list.toString());
                     }else{
                         testLog.sendToConsoleMessage("#TEST [class TagsOwnServlet] tags not found by title");
-                        otherService.errorToClient(response, 204);
+                        otherService.sendToClient(response, 204);
                     }
                 }else{
-                    otherService.errorToClient(response, 401);
+                    otherService.sendToClient(response, 401);
                 }
             }else{
-                otherService.errorToClient(response, 401);
+                otherService.sendToClient(response, 401);
             }
         }else{
-            otherService.errorToClient(response, 204);
+            otherService.sendToClient(response, 204);
         }
     }
 }
