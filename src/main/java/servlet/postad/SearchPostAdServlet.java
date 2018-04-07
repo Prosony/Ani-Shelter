@@ -35,7 +35,7 @@ public class SearchPostAdServlet extends HttpServlet {
 
         if (token != null && !token.isEmpty()) {
             if (stringTags != null && !stringTags.isEmpty() && !stringTags.equals("null")) {
-                Account account = tokenCache.getAccountByJws(token);
+                Account account = tokenCache.getAccountByToken(token);
                 if (account != null) {
                     JsonParser jsonParser = new JsonParser();
                     JsonObject jsonTags = (JsonObject)jsonParser.parse(stringTags);

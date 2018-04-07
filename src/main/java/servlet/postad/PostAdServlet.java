@@ -42,7 +42,7 @@ public class PostAdServlet extends HttpServlet {
 
             if (id != null && !id.isEmpty() && !id.equals("null")){
                 UUID idAccount = UUID.fromString(id);
-                Account account = tokenCache.getAccountByJws(token);
+                Account account = tokenCache.getAccountByToken(token);
 
                 if (account != null) {
 

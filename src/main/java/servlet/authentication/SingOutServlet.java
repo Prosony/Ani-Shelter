@@ -26,7 +26,7 @@ public class SingOutServlet extends HttpServlet {
         String token = (String) new JsonHandler().getJsonFromRequest(request).get("token");
 
         if (token != null && !token.equals("")){
-            if(tokenCache.getAccountByJws(token) != null) {
+            if(tokenCache.getAccountByToken(token) != null) {
                 tokenCache.deleteJws(token);
                 testLog.sendToConsoleMessage("#TEST [class SingOutServlet] Token was deleted from cache ");
             }else{

@@ -1,5 +1,6 @@
 package model.profile;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
  */
 public class Profile {
     private UUID id;
-    private LocalDate dateCreateAccount;
+    private Timestamp dateCreateAccount;
     private String name;
     private String surname;
     private String email;
@@ -19,7 +20,7 @@ public class Profile {
     private String path_avatar;
     private String about;
 
-    public Profile(UUID id, LocalDate dateCreateAccount, String name, String surname, String email, String phone, String birthday, String about, String path_avatar){
+    public Profile(UUID id, Timestamp dateCreateAccount, String name, String surname, String email, String phone, String birthday, String about, String path_avatar){
         this.id = id;
         this.dateCreateAccount = dateCreateAccount;
         this.name = name;
@@ -35,10 +36,10 @@ public class Profile {
     public void setId(UUID id) { this.id= id; }
 
 
-    public LocalDate getDateCreateAccount() {
+    public Timestamp getDateCreateAccount() {
         return dateCreateAccount;
     }
-    public void setDateCreateAccount(LocalDate dateCreateAccount) {
+    public void setDateCreateAccount(Timestamp dateCreateAccount) {
         this.dateCreateAccount = dateCreateAccount;
     }
 

@@ -35,7 +35,7 @@ public class PeopleAdServlet extends HttpServlet {
 
         if (token != null && !token.isEmpty() && !token.equals("null")) {
 
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
 
             if (account != null) {
                 SelectQueryDB selectQueryDB = new SelectQueryDB();

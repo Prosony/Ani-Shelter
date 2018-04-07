@@ -27,7 +27,7 @@ public class GetCountUnreadMessagesServlet extends HttpServlet{
         String token = jsonHandler.get("token").toString();
 
         if (token != null && !token.isEmpty() && !token.equalsIgnoreCase("null")) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) { //TODO write cache
                 SelectQueryDB selectQueryDB = new SelectQueryDB();
                 int count = selectQueryDB.getCountUnreadMessages(account.getId().toString());

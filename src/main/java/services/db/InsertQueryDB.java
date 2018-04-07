@@ -18,9 +18,8 @@ public class InsertQueryDB {
      **************************************************************************************************/
 
     public void insertPostAd(UUID idPostAd, UUID idAccount, JsonObject jsonText, JsonObject jsonTags, JsonArray jsonPathImage, Timestamp timestamp){
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
-
             PreparedStatement aboutUpdate = connection.prepareStatement("insert into post_ad(id, id_account, json_text, json_tags, json_path_image, json_path_avatar, timestamp) " +
                     "VALUES (?,?,?,?,? ,?,?);");
 
@@ -37,21 +36,17 @@ public class InsertQueryDB {
             aboutUpdate.setString(6, String.valueOf(jsonPathAvatar));
             aboutUpdate.setTimestamp(7, timestamp);
             aboutUpdate.executeUpdate();
-
-            dataBaseService.putback(connection);
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        dataBaseService.putback(connection);
     }
     /**************************************************************************************************
      *                                          Messages
      **************************************************************************************************/
     public boolean insertMessage(Messages message){
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
-
             PreparedStatement insertMessage = connection.prepareStatement("insert into messages(id_message, id_dialog, id_outcoming_account, timestamp, message, is_read) " +
                     "VALUES (?,?,?,?,?,?);");
             insertMessage.setString(1, String.valueOf(message.getIdMessage()));
@@ -65,14 +60,34 @@ public class InsertQueryDB {
             dataBaseService.putback(connection);
             return true;
         } catch (SQLException e) {
+            dataBaseService.putback(connection);
             e.printStackTrace();
         }
         return false;
     }
     /**************************************************************************************************
+     *                                          Dialog
+     **************************************************************************************************/
+    public String insertDialog(String idAccountOutcoming, String idAccountIncoming){
+        Connection connection = dataBaseService.retrieve();
+        try {
+            PreparedStatement insert = connection.prepareStatement("insert into dialogs(id_dialogs, id_account_outcoming, id_account_incoming) VALUES (?,?,?)");
+            String idDialog = String.valueOf(UUID.randomUUID());
+            insert.setString(1,idDialog);
+            insert.setString(2,idAccountOutcoming);
+            insert.setString(3,idAccountIncoming);
+            insert.executeUpdate();
+            return idDialog;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dataBaseService.putback(connection);
+        return null;
+    }
+    /**************************************************************************************************
      *                                          Account
      **************************************************************************************************/
-    public void insertAccount(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, String dateCreateAccount){
+    public void insertAccount(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, Timestamp dateCreateAccount){
         Connection connection = dataBaseService.retrieve();
         try {
             PreparedStatement insert = connection.prepareStatement("insert into account(id_account, email, password) VALUES (?,?,?)");
@@ -84,7 +99,7 @@ public class InsertQueryDB {
             insert = connection.prepareStatement("INSERT INTO profile(id, date_create_account, name, surname, email, phone, birthday, path_avatar, about) VALUES " +
                     "(?,?,?,?,?,?,?,?,?)");
             insert.setString(1,idAccount);
-            insert.setString(2,dateCreateAccount);
+            insert.setTimestamp(2, dateCreateAccount);
             insert.setString(3,name);
             insert.setString(4,surname);
             insert.setString(5,email);

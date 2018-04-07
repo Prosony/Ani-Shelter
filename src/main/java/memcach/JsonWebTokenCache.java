@@ -22,7 +22,7 @@ public class JsonWebTokenCache {
         mapOnlineAccount = new ConcurrentHashMap<>();
     }
 
-    public Account getAccountByJws(String compactJws) { return mapOnlineAccount.get(compactJws); }
+    public Account getAccountByToken(String compactJws) { return mapOnlineAccount.get(compactJws); }
 
     public void addJws(String compactJws, Account account) { mapOnlineAccount.put(compactJws, account); }
 

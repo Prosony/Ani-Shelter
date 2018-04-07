@@ -25,24 +25,24 @@ public class GetLastMessageDialogServlet extends HttpServlet {
 
 
     public void doPost(HttpServletRequest request, HttpServletResponse response){
-
-        JSONObject jsonHandler = new JsonHandler().getJsonFromRequest(request);
-        String token = jsonHandler.get("token").toString();
-        String idDialog = jsonHandler.get("id_dialog").toString();
+        JSONObject json = new JsonHandler().getJsonFromRequest(request);
+        String idDialog = String.valueOf(json.get("id_dialog"));
+        String token    = String.valueOf(json.get("token"));
 
         if (token != null && !token.isEmpty() && !token.equalsIgnoreCase("null")) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) { //TODO write cache
                 if (idDialog != null && !idDialog.isEmpty() && !idDialog.equalsIgnoreCase("null")) {
                     SelectQueryDB selectQueryDB = new SelectQueryDB();
                     Messages message = selectQueryDB.getLastMessageByIdDialog(idDialog);
-
+                    testLog.sendToConsoleMessage("#INFO [GetLastMessageDialogServlet] message: "+message);
                     if (message != null){
                         otherService.answerToClient(response, new Gson().toJson(message));
                     }else{
-                        testLog.sendToConsoleMessage("#INFO [GetLastMessageDialogServlet] [ERROR] message not found!");
+                        testLog.sendToConsoleMessage("#ERROR [GetLastMessageDialogServlet] message not found!");
                         otherService.sendToClient(response, 204);
                     }
+
                 }
             }
         }

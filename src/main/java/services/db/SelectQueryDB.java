@@ -33,9 +33,8 @@ public class SelectQueryDB {
     public Account getAccountByEmail(String email, String password){
         Account account = null;
         Profile profile = null;
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
-
             PreparedStatement select = connection.prepareStatement("select * from account, profile where account.email = ? AND account.password = ? AND account.id_account = profile.id;");
             select.setString(1,email);
             select.setString(2,password);
@@ -49,7 +48,7 @@ public class SelectQueryDB {
                 password = rsAccount.getString("password");
 
                 account = new Account(id, email, password);
-                String date = rsAccount.getString("date_create_account");
+                Timestamp date = rsAccount.getTimestamp("date_create_account");
                 String name =rsAccount.getString("name");
                 String surname = rsAccount.getString("surname");
                 String phone = rsAccount.getString("phone");
@@ -58,7 +57,7 @@ public class SelectQueryDB {
                 String about = rsAccount.getString("about");
 
                 DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, email, phone, birthday, about, pathAvatar);
+                profile = new Profile(id, date, name, surname, email, phone, birthday, about, pathAvatar);
 
             }
             if (account != null && profile != null){
@@ -66,26 +65,26 @@ public class SelectQueryDB {
                 AccountCache accountCache = AccountCache.getInstance();
                 accountCache.addAccount(account, profile);
             }
-                dataBaseService.putback(connection);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return account;
     }
 
     public Profile getProfileById(UUID id){
         Profile profile = null;
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
-
             PreparedStatement  select = connection.prepareStatement("select * from profile where profile.id = ?;");
             select.setString(1,id.toString());
             ResultSet rsAccount;
             rsAccount = select.executeQuery();
 
             while (rsAccount.next()) {
-                String date = rsAccount.getString("date_create_account");
+                Timestamp date = rsAccount.getTimestamp("date_create_account");
                 String name =rsAccount.getString("name");
                 String surname = rsAccount.getString("surname");
                 String email = rsAccount.getString("email");
@@ -94,14 +93,40 @@ public class SelectQueryDB {
                 String pathAvatar = rsAccount.getString("path_avatar");
                 String about = rsAccount.getString("about");
                 DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                profile = new Profile(id, LocalDate.parse(date, DATE_FORMAT), name, surname, email, phone, birthday, about, pathAvatar);
+                profile = new Profile(id, date, name, surname, email, phone, birthday, about, pathAvatar);
             }
-            dataBaseService.putback(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return profile;
+    }
+    public boolean emailIsUsed(String email){
+//        select email from account where account.email = 'Prosony@bk.ru'
+        Connection connection = dataBaseService.retrieve();
+        try {
+            PreparedStatement  select = connection.prepareStatement("select email from account where account.email = ?");
+            select.setString(1,email);
+            ResultSet rsAccount;
+            rsAccount = select.executeQuery();
+
+            while (rsAccount.next()) {
+                String result = rsAccount.getString("email");
+//                System.out.println("result "+result );
+                if (result != null && !result.isEmpty()){
+                    if (email.equalsIgnoreCase(result)){
+                        return true;
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
+        return false;
     }
     /**************************************************************************************************
      *                                          TAGS -/- CATEGORY
@@ -109,8 +134,9 @@ public class SelectQueryDB {
 
     public String getTagCategoryByTitle(String title){ //TODO rewrite this shit
         String jsonTag = null;
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
+
             PreparedStatement select = connection.prepareStatement("select * from tags where tags.title = ?;");
             select.setString(1,title);
             ResultSet data;
@@ -118,17 +144,18 @@ public class SelectQueryDB {
             while (data.next()) {
                 jsonTag =data.getString("json_tag");
             }
-            dataBaseService.putback(connection);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return jsonTag;
     }
     public ArrayList<String> getTagsByTitle(String title){
         ArrayList<String> list = new ArrayList<>();
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("select * from tags where tags.title = ?;");
             select.setString(1,title);
             ResultSet rsAccount;
@@ -136,10 +163,10 @@ public class SelectQueryDB {
             while (rsAccount.next()) {
                 list.add(rsAccount.getString("json_tag"));
             }
-            dataBaseService.putback(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return list;
     }
@@ -149,8 +176,8 @@ public class SelectQueryDB {
 
     public ArrayList<PostAd> getAllPostAdByIdAccount(UUID idAccount){
         ArrayList<PostAd> list = new ArrayList<>();
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id_account = ? ORDER BY post_ad.timestamp;");
             select.setString(1, idAccount.toString());
             ResultSet data = select.executeQuery();
@@ -171,7 +198,6 @@ public class SelectQueryDB {
                     e.printStackTrace();
                 }
             }
-            dataBaseService.putback(connection);
             if (!list.isEmpty()){
                 return list;
             }else{
@@ -180,13 +206,14 @@ public class SelectQueryDB {
         } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return null;
     }
     public PostAd getPostAdByIdPostAd(UUID idPostAd){
         PostAd postAd = null;
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id = ?;");
             select.setString(1, idPostAd.toString());
             ResultSet data = select.executeQuery();
@@ -210,21 +237,23 @@ public class SelectQueryDB {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return postAd;
     }
     public ArrayList<PostAd> getPostAdPeople(UUID idAccount){
         ArrayList<PostAd> list = new ArrayList<>();
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
+
             PreparedStatement select = connection.prepareStatement("select * from post_ad where post_ad.id_account != ? ORDER BY post_ad.timestamp;;");
             select.setString(1,idAccount.toString());
             ResultSet data = select.executeQuery();
             list = getPostAdFromJson(data);
-            dataBaseService.putback(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return list;
     }
@@ -235,16 +264,16 @@ public class SelectQueryDB {
         String query = buildQuery(tags);
         log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[getPostAdByTags] query: "+query);
         Connection connection = null;
+        connection = dataBaseService.retrieve();
         try {
-            connection = dataBaseService.retrieve();
             Statement stmt = connection.createStatement();
             ResultSet data = stmt.executeQuery(query);
             list = getPostAdFromJson(data);
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return list;
     }
 
@@ -255,8 +284,8 @@ public class SelectQueryDB {
 
         ArrayList<Dialog> list = new ArrayList<>();
         Connection connection = null;
+        connection = dataBaseService.retrieve();
         try {
-            connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_account_outcoming = ? OR dialogs.id_account_incoming = ?; ");
             select.setString(1, idAccount);
             select.setString(2, idAccount);
@@ -265,19 +294,41 @@ public class SelectQueryDB {
                 list.add(new Dialog(UUID.fromString(result.getString("id_dialogs")),
                         UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming"))));
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return list;
 
     }
-    public Dialog getDialogByIdDialog(String idDialog){
+    public Dialog getDialogByIdInterlocutor(String idAccount, String idInterlocutor){
         Dialog dialog = null;
         Connection connection = null;
         try {
             connection = dataBaseService.retrieve();
+            PreparedStatement select = connection.prepareStatement(
+                    "select * from dialogs where dialogs.id_account_incoming = ? and dialogs.id_account_outcoming = ? or dialogs.id_account_incoming = ? and dialogs.id_account_outcoming = ?;");
+            select.setString(1, idAccount);
+            select.setString(2, idInterlocutor);
+            select.setString(3, idInterlocutor);
+            select.setString(4, idAccount);
+            ResultSet result = select.executeQuery();
+            while (result.next()) {
+                dialog = new Dialog(UUID.fromString(result.getString("id_dialogs")),
+                        UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
+        return dialog;
+    }
+    public Dialog getDialogByIdDialog(String idDialog){
+        Dialog dialog = null;
+        Connection connection = dataBaseService.retrieve();
+        try {
             PreparedStatement select = connection.prepareStatement("SELECT * FROM dialogs WHERE dialogs.id_dialogs = ?;");
             select.setString(1, idDialog);
             ResultSet result = select.executeQuery();
@@ -285,20 +336,20 @@ public class SelectQueryDB {
                 dialog = new Dialog(UUID.fromString(result.getString("id_dialogs")),
                         UUID.fromString(result.getString("id_account_outcoming")), UUID.fromString(result.getString("id_account_incoming")));
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return dialog;
     }
     public ArrayList<Messages> getMessagesByIdDialog(String idDialog){
 
         ArrayList<Messages> list = new ArrayList<>();
         Connection connection = null;
+        connection = dataBaseService.retrieve();
         try {
-            connection = dataBaseService.retrieve();
-            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_dialog = ? ORDER BY messages.timestamp;");
+            PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_dialog = ? ORDER BY messages.timestamp asc;");
             select.setString(1, idDialog);
             ResultSet result = select.executeQuery();
             while (result.next()) {
@@ -306,19 +357,39 @@ public class SelectQueryDB {
                         UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message"), result.getBoolean("is_read")
                         ));
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
+        return list;
+    }
+    public ArrayList<Messages> getSomeMessagesByIdDialog(String idDialog , String count){
+        ArrayList<Messages> list = new ArrayList<>();
+        Connection connection = dataBaseService.retrieve();
+        try {
+            PreparedStatement statement = connection.prepareStatement("select * from messages where messages.id_dialog = ? order by messages.timestamp desc limit "+count+";");
+            statement.setString(1,idDialog);
+
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                list.add(new Messages(UUID.fromString(result.getString("id_message")),UUID.fromString(result.getString("id_dialog")),
+                        UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message"), result.getBoolean("is_read")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return list;
     }
     public Messages getMessageByIdMessage(String idMessage){
 
         Messages message = null;
         Connection connection = null;
+        connection = dataBaseService.retrieve();
         try {
-            connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("SELECT * FROM messages WHERE messages.id_message= ? ;");
             select.setString(1, idMessage);
             ResultSet result = select.executeQuery();
@@ -327,20 +398,20 @@ public class SelectQueryDB {
                         UUID.fromString(result.getString("id_outcoming_account")), result.getTimestamp("timestamp"), result.getString("message")
                         , result.getBoolean("is_read"));
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return message;
     }
     public Messages getLastMessageByIdDialog(String idDialog){
         Messages message = null;
         Connection connection = null;
+        connection = dataBaseService.retrieve();
         try {
-            connection = dataBaseService.retrieve();
             PreparedStatement select = connection.prepareStatement("select * from messages where messages.id_dialog = ? " +
-                    "and messages.timestamp = (select MAX(messages.timestamp) from messages);");
+                    "order by messages.timestamp desc limit 1;");
             select.setString(1, idDialog);
             ResultSet result = select.executeQuery();
             while (result.next()) {
@@ -349,18 +420,21 @@ public class SelectQueryDB {
                         result.getBoolean("is_read")
                 );
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
+
         return message;
     }
     public int getCountUnreadMessages(String idAccount){
         int count = 0;
         ArrayList<Dialog> list = getAllDialogsByIdAccount(idAccount);
+        Connection connection = dataBaseService.retrieve();
         try {
-            Connection connection = dataBaseService.retrieve();
+
             Statement stmt = connection.createStatement();
             StringBuilder builder = new StringBuilder();
             builder.append("select COUNT(*) from messages where is_read = false AND messages.id_outcoming_account != '").append(idAccount).append("' and (");
@@ -380,11 +454,11 @@ public class SelectQueryDB {
             while (result.next()) {
                 count = result.getInt("COUNT(*)");
             }
-            dataBaseService.putback(connection);
-            dataBaseService.getAvailableConnections();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return count;
     }
      /**************************************************************************************************

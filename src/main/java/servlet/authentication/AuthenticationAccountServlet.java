@@ -52,7 +52,7 @@ public class AuthenticationAccountServlet extends HttpServlet {
                 if (email.equalsIgnoreCase(account.getEmail()) && password.equals(account.getPassword())) {
                     String compactJws = new JWTService().createJWT(request);
 
-                    if (tokenCache.getAccountByJws(compactJws) == null){
+                    if (tokenCache.getAccountByToken(compactJws) == null){
                         tokenCache.addJws(compactJws, account);
                         otherService.answerToClient(response, new Gson().toJson(new AccountCallBack(account.getId(),compactJws)));
                     }else{

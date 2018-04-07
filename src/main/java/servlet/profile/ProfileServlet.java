@@ -38,7 +38,7 @@ public class ProfileServlet extends HttpServlet {
             String idAccountProfile = (String) jsonObject.get("id");
 
         if (token != null && !token.isEmpty()) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null){
                 if (idAccountProfile != null && !idAccountProfile.isEmpty() && !idAccountProfile.equals("null")) {
                     log.sendToConsoleMessage("#TEST [class ProfileServlet] idAccountRequest: " +idAccountProfile);

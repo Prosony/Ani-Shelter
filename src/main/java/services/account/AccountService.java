@@ -7,6 +7,7 @@ import memcach.AccountCache;
 import model.account.Account;
 import test.TestLog;
 
+import java.sql.Timestamp;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,7 +27,7 @@ public class AccountService {
         }
         return null;
     }
-    public boolean checkData(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, String dateCreateAccount){
+    public boolean checkData(String email ,String password, String name, String surname, String phone, String birthday, String pathToAvatar, String about, Timestamp dateCreateAccount){
         boolean allRight = true;
 
         if (email == null || email.isEmpty()) allRight = false;
@@ -37,7 +38,7 @@ public class AccountService {
         if (birthday == null || birthday.isEmpty()) allRight = false;
         if (pathToAvatar == null || pathToAvatar.isEmpty()) allRight = false;
         if (about == null || about.isEmpty()) allRight = false;
-        if (dateCreateAccount == null || dateCreateAccount.isEmpty()) allRight = false;
+        if (dateCreateAccount == null || dateCreateAccount.toString().isEmpty()) allRight = false;
         return allRight;
     }
 }

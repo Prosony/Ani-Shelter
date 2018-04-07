@@ -28,76 +28,15 @@ public class RoutingFilter implements Filter {
         String URL = request.getRequestURL().toString();
         log.sendToConsoleMessage("\n#FILTER [RoutingFilter]" + new Date() +", Remote address: "+request.getRemoteAddr()
                     +", Remote host: "+request.getRemoteHost()+", Servlet Path: " + request.getServletPath() + ", URL: " + request.getRequestURL());
-
-//
-//        switch (URL){
-//            case "http://185.77.204.249:8080/check-account":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/authentication/sign-in":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/get-started":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-////                break;
-//            case "http://185.77.204.249:8080/files":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/generate-uuid":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/js/jquery-3.2.1.min.js":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/js/c13f37b67e.js":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/css/semantic.css":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/js/semantic.js":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/css/themes/default/assets/fonts/icons.ttf":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/css/themes/default/assets/fonts/icons.woff2":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            case "http://185.77.204.249:8080/resources/css/themes/default/assets/fonts/icons.woff":
-//                filterChain.doFilter(servletRequest, servletResponse);
-//                return;
-//            default:
-//                JSONObject jsonObject = new JsonHandler().getJsonFromRequest(request);
-//                System.out.println("#FILTER json: "+jsonObject);
-//                if (jsonObject != null){
-//                    String token = String.valueOf(jsonObject.get("token"));
-//                    if (token != null && !token.isEmpty()){
-//                        filterChain.doFilter(servletRequest, servletResponse);
-//                    }else{
-//                        otherService.sendToClient(response,401);
-//                    }
-//                }else{
-//                    otherService.sendToClient(response,401);
-//                }
-//
-//        }
-//        parseRequest(request);
+        addCorsHeader(response);
         filterChain.doFilter(servletRequest, servletResponse);
     }
-    private void parseRequest(HttpServletRequest request){
-        byte[] data = new byte[request.getContentLength()];
-        try {
-            InputStream inputStream = request.getInputStream();
-            inputStream.read(data);
-            System.out.println("#FILTER request byte: "+Arrays.toString(data));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void addCorsHeader(HttpServletResponse response){
+        //TODO: externalize the Allow-Origin
+        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+        response.addHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+        response.addHeader("Access-Control-Max-Age", "1728000");
     }
     @Override
     public void destroy() { }

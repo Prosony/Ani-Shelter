@@ -36,7 +36,7 @@ public class OnePostAdServlet extends HttpServlet {
 
             if (id != null && !id.toString().isEmpty() && !id.toString().equals("null")) {
 
-                Account account = tokenCache.getAccountByJws(token);
+                Account account = tokenCache.getAccountByToken(token);
 
                 if (account != null) {
                     PostAd postAd = getPostId(id);

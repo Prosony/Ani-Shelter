@@ -19,12 +19,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -62,7 +57,7 @@ public class AddPostAdServlet extends HttpServlet{
         jsonText.addProperty("date", date.getDayOfMonth()+"."+date.getMonthValue()+"."+date.getYear());
 
         if (token != null && !token.isEmpty() && !token.equals("null")) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) {
                 UUID idAccount = account.getId();
                 UUID idPostAd = UUID.randomUUID();

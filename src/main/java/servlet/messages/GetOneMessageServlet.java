@@ -28,7 +28,7 @@ public class GetOneMessageServlet extends HttpServlet {
         String idMessage = jsonHandler.get("id_message").toString();
 
         if (token != null && !token.isEmpty() && !token.equalsIgnoreCase("null")) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) { //TODO write cache
 
                 if (idMessage != null && !idMessage.isEmpty() && !idMessage.equalsIgnoreCase("null")){

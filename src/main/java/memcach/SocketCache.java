@@ -7,10 +7,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MessageSocketCache { //TODO rewrite cache, bcs user can be authorized from multiple(a few sessions) devices
+public class SocketCache { //TODO rewrite cache, bcs user can be authorized from multiple(a few sessions) devices
 
-    private static MessageSocketCache instance = new MessageSocketCache();
-    public static MessageSocketCache getInstance() {
+    private static SocketCache instance = new SocketCache();
+    public static SocketCache getInstance() {
         return instance;
     }
 
@@ -47,7 +47,7 @@ public class MessageSocketCache { //TODO rewrite cache, bcs user can be authoriz
     public void printAllOnline(){
         Set<Session> list = getAllSession();
         for (Session session : list){
-            System.out.println("#INFO [MessageSocketCache] [printAllOnline] session"+ session +" idAccoount: "+mapIdAccountBySessionSocket.get(session));
+            System.out.println("#INFO [SocketCache] [printAllOnline] session"+ session +" idAccount: "+mapIdAccountBySessionSocket.get(session));
         }
 
     }

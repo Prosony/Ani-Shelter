@@ -40,7 +40,7 @@ public class FavoritesServlet extends HttpServlet {
         String token = jsonObject.get("token").toString();
 
         if (token!= null && !token.equals("") && !token.equals("null")){
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) {
 
                 PostAdService postAdService = new PostAdService();

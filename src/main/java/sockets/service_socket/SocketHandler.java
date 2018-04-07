@@ -1,7 +1,7 @@
 package sockets.service_socket;
 
 import com.google.gson.JsonObject;
-import memcach.MessageSocketCache;
+import memcach.SocketCache;
 import model.message.Dialog;
 import model.message.Messages;
 import services.db.InsertQueryDB;
@@ -20,7 +20,7 @@ public class SocketHandler {
 
     private InsertQueryDB insertDB = new InsertQueryDB();
     private TestLog testLog = TestLog.getInstance();
-    private MessageSocketCache cache = MessageSocketCache.getInstance();
+    private SocketCache cache = SocketCache.getInstance();
     private UpdateQueryDB updateDB = new UpdateQueryDB();
 
     public void messageHandler(String j_message, JsonObject jsonMessage){
@@ -28,7 +28,7 @@ public class SocketHandler {
         String idMessage = jsonMessage.get("id_message").getAsString();
         String idDialog = jsonMessage.get("id_dialog").getAsString();
         String idOutcomingAccount = jsonMessage.get("id_outcoming_account").getAsString();
-        Timestamp dateTime = new Timestamp(jsonMessage.get("date_time").getAsLong());
+        Timestamp dateTime = new Timestamp(jsonMessage.get("date").getAsLong());
         String message = jsonMessage.get("message").getAsString();
         boolean isRead = jsonMessage.get("is_read").getAsBoolean();
         UUID idDialogUUID = UUID.fromString(idDialog);

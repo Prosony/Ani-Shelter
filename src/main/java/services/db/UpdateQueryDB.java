@@ -20,13 +20,13 @@ public class UpdateQueryDB {
             statement.setString(3, idReader);
             statement.execute();
             log.sendToConsoleMessage("#INFO [UpdateQueryDB][updateStatusReadMessage][SUCCESS]");
-            dataBaseService.putback(connection);
-
             return true;
         } catch (SQLException e) {
             log.sendToConsoleMessage("#INFO [UpdateQueryDB][updateStatusReadMessage][ERROR]");
             e.printStackTrace();
         }
+        dataBaseService.putback(connection);
+        dataBaseService.getAvailableConnections();
         return false;
     }
 }

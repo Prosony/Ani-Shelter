@@ -4,7 +4,7 @@ package sockets;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import memcach.JsonWebTokenCache;
-import memcach.MessageSocketCache;
+import memcach.SocketCache;
 import model.account.Account;
 import sockets.service_socket.SocketHandler;
 import test.TestLog;
@@ -19,7 +19,7 @@ public class MessagesSocket {
 
     private JsonWebTokenCache tokenCache = JsonWebTokenCache.getInstance();
     private TestLog log = TestLog.getInstance();
-    private MessageSocketCache cache = MessageSocketCache.getInstance();
+    private SocketCache cache = SocketCache.getInstance();
 
     private SocketHandler handler = new SocketHandler ();
 
@@ -27,7 +27,7 @@ public class MessagesSocket {
     public void onOpen(Session session, @PathParam("token") String token){
         log.sendToConsoleMessage("#SOCKET [MessagesSocket] token : "+token);
         if (token != null && !token.isEmpty() && !token.equals("null")) {
-            Account account = tokenCache.getAccountByJws(token);
+            Account account = tokenCache.getAccountByToken(token);
             if (account != null) {
                 log.sendToConsoleMessage("#INFO [SOCKET] outcoming_account: "+account.getId());
                 cache.addAccount(session, account.getId());
