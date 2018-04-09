@@ -49,7 +49,8 @@ public class FileServlet extends HttpServlet {
                     index++;
                 }else{
                     testLog.sendToConsoleMessage("#INFO [FileServlet] file from FS: [INDEX]: "+index+" [PATH]: "+aPathString);
-                    String file = new String(service.getFileByPath(aPathString));
+//                    String file = new String(service.getFileByPath(aPathString));
+                    String file = service.getFileByPath(aPathString);
                     base64image.add(file);
                     cache.addListFavorites(aPathString, file);
                     index++;

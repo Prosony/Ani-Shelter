@@ -4,64 +4,110 @@ package services;
  * @since 0.0.1
  */
 import com.google.gson.JsonArray;
+import junit.framework.Assert;
 import test.TestLog;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class FileService {
 
     private TestLog log = TestLog.getInstance();
     private static final int DEFAULT_BUFFER_SIZE = 102_400; //100kb
 
-    public byte[] getFileByPath(String path){
+    public String getFileByPath(String path){
 
         if (path != null && !path.isEmpty() && !path.equalsIgnoreCase("null")) {
             File file = new File(path);
             if (file.exists()) {
-                log.sendToConsoleMessage("#TEST [class FileService] method[getFileByPath] file name: "+file.getName()+", file exist?: "+file.exists()+", path: "+file.getPath());
+                log.sendToConsoleMessage("#TEST [FileService][getFileByPath] file name: "+file.getName()+", file exist?: "+file.exists()+", path: "+file.getPath());
                 BufferedInputStream input = null;
                 byte[] bytes;
-                try {
-                    bytes = loadFile(file);
-                    return bytes;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                    bytes = loadFile(file, path);
+                    if (bytes != null){
+                        log.sendToConsoleMessage("#SUCCESS [FileService][getFileByPath]");
+                        return new String(bytes);
+                    }else{
+
+                    }
+
+
+
 //                try {
 //                    input = new BufferedInputStream(new FileInputStream(file), DEFAULT_BUFFER_SIZE);
 //
 //                } catch (IOException e) {
 //                    e.printStackTrace();
-//                } finally {
-//                    close(input);
 //                }
             }
         }
         return null;
     }
-    private byte[] loadFile(File file) throws IOException {
-        InputStream inputStream = new FileInputStream(file);
 
-        long length = file.length();
-        if (length > Integer.MAX_VALUE) {
-            log.sendToConsoleMessage("#TEST [class FileServlet] method[loadFile] file is too large");
-        }
-        byte[] bytes = new byte[(int)length];
+    private byte[] loadFile(File file, String path){
+        try {
+            long length = file.length();
+            if (length > Integer.MAX_VALUE) {
+                log.sendToConsoleMessage("#INFO [class FileServlet][loadFile] file is too large");
+            }
+            byte[] buffer = new byte[(int)length]; // Use this for reading the data.
 
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length && (numRead = inputStream.read(bytes, offset, bytes.length-offset)) >= 0) {
-            offset += numRead;
-        }
+            FileInputStream inputStream = new FileInputStream(file);
 
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file "+file.getName());
+            int total = 0;
+            int nRead = 0;
+            while((nRead = inputStream.read(buffer)) != -1) {
+
+                System.out.println(new String(buffer));
+                total += nRead;
+            }
+            inputStream.close();
+            System.out.println("Read " + total + " bytes");
+            return buffer;
+        } catch(FileNotFoundException ex) {
+            System.out.println("Unable to open file '" + path + "'");
+        } catch(IOException ex) {
+            System.out.println("Error reading file '" + path + "'");
         }
-        inputStream.close();
-        return bytes;
+        return null;
     }
+
+    private byte[] loadFile(File file) {
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(file);
+            long length = file.length();
+            if (length > Integer.MAX_VALUE) {
+                log.sendToConsoleMessage("#INFO [class FileServlet][loadFile] file is too large");
+            }
+            byte[] bytes = new byte[(int)length];
+
+            int offset = 0;
+            int numRead = 0;
+            while (offset < bytes.length && (numRead = inputStream.read(bytes, offset, bytes.length-offset)) >= 0) {
+                offset += numRead;
+            }
+
+            if (offset < bytes.length) {
+                throw new IOException("Could not completely read file "+file.getName());
+            }
+            inputStream.close();
+            return bytes;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            close(inputStream);
+        }
+        return null;
+    }
+
     private void close(Closeable resource) {
         if (resource != null) {
             try {
@@ -80,7 +126,12 @@ public class FileService {
         try {
             isCreated = createFolder(idAccount, uuid);
             if (isCreated){
-                String path = "E:/file/"+idAccount+"/"+uuid;
+                StringBuilder builder = new StringBuilder();
+                builder.append("E:/file/");
+                builder.append(idAccount);
+                builder.append("/");
+                builder.append(uuid);
+                String path = builder.toString();
                 for(int index = 0; index < objectJsonImageBase64.size(); index++){
 
                     resultArray.add(path+"/"+UUID.randomUUID()+".txt");
@@ -93,7 +144,7 @@ public class FileService {
                 log.sendToConsoleMessage("resultArray: "+resultArray);
                 return resultArray;
             }else{
-                log.sendToConsoleMessage("#TEST [class AddPostAdServlet] [saveFileOnFS] [ERROR]: Something wrong with path [E:/file/"+idAccount+"/"+uuid+"]");
+                log.sendToConsoleMessage("#TEST [class AddPostAdServlet][saveFileOnFS] [ERROR]: Something wrong with path [E:/file/"+idAccount+"/"+uuid+"]");
             }
         } catch (IOException iox) {
             iox.printStackTrace();
@@ -119,7 +170,7 @@ public class FileService {
         }else{
             isSecond = true;
         }
-        System.out.println("#INFO [AddPostAdServlet] [createFolder] isFirst: "+isFirst+" isSecond: "+isSecond);
+        System.out.println("#INFO [AddPostAdServlet][createFolder] isFirst: "+isFirst+" isSecond: "+isSecond);
         return (isFirst && isSecond);
     }
 }
