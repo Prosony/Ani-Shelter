@@ -5,6 +5,7 @@ package services;
  */
 import com.google.gson.JsonArray;
 import junit.framework.Assert;
+import test.CheckProperties;
 import test.TestLog;
 import java.io.*;
 import java.net.URISyntaxException;
@@ -20,6 +21,11 @@ public class FileService {
 
     private TestLog log = TestLog.getInstance();
     private static final int DEFAULT_BUFFER_SIZE = 102_400; //100kb
+    private String pathFile;
+
+    public FileService(){
+        pathFile = CheckProperties.getInstance().getPathFile();
+    }
 
     public String getFileByPath(String path){
 
@@ -127,11 +133,13 @@ public class FileService {
             isCreated = createFolder(idAccount, uuid);
             if (isCreated){
                 StringBuilder builder = new StringBuilder();
-                builder.append("E:/file/");
+//                builder.append("E:/file/");
+                builder.append(pathFile);
                 builder.append(idAccount);
                 builder.append("/");
                 builder.append(uuid);
                 String path = builder.toString();
+                System.out.println("");
                 for(int index = 0; index < objectJsonImageBase64.size(); index++){
 
                     resultArray.add(path+"/"+UUID.randomUUID()+".txt");
@@ -144,7 +152,7 @@ public class FileService {
                 log.sendToConsoleMessage("resultArray: "+resultArray);
                 return resultArray;
             }else{
-                log.sendToConsoleMessage("#TEST [class AddPostAdServlet][saveFileOnFS] [ERROR]: Something wrong with path [E:/file/"+idAccount+"/"+uuid+"]");
+                log.sendToConsoleMessage("#INFO [class AddPostAdServlet][saveFileOnFS] [ERROR]: Something wrong with path");
             }
         } catch (IOException iox) {
             iox.printStackTrace();
@@ -155,8 +163,8 @@ public class FileService {
     private boolean createFolder(UUID idAccount, UUID idPostAd){
         boolean isFirst = false;
         boolean isSecond = false;
-        String pathFirst = "E:/file/"+idAccount;
-        String pathSecond = "E:/file/"+idAccount+"/"+idPostAd;
+        String pathFirst = pathFile+idAccount;
+        String pathSecond = pathFile+idAccount+"/"+idPostAd;
 
         if ( !Files.exists(Paths.get(pathFirst)) ) {
             File folder = new File(pathFirst);

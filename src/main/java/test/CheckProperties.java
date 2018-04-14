@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public class CheckProperties {
 	private boolean isTest = false;
+	private String pathFile;
 	private CheckProperties(){
 		try {
 			Properties properties = new Properties();
@@ -16,6 +17,7 @@ public class CheckProperties {
 			String appConfigPath = rootPath + "test.properties";
 			properties.load(new FileInputStream(appConfigPath));
 			isTest = Boolean.parseBoolean(properties.getProperty("test"));
+			pathFile = String.valueOf(properties.getProperty("path_file"));
 			System.out.println("it is test? -" +isTest);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -26,7 +28,11 @@ public class CheckProperties {
 		return instance;
 	}
 
+
 	public boolean getProperties(){
 		return isTest;
+	}
+	public String getPathFile(){
+		return pathFile;
 	}
 }

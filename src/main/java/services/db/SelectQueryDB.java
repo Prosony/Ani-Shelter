@@ -429,34 +429,41 @@ public class SelectQueryDB {
 
         return message;
     }
+
     public int getCountUnreadMessages(String idAccount){
         int count = 0;
         ArrayList<Dialog> list = getAllDialogsByIdAccount(idAccount);
         Connection connection = dataBaseService.retrieve();
-        try {
+        if (list != null && !list.isEmpty()){
+            try {
 
-            Statement stmt = connection.createStatement();
-            StringBuilder builder = new StringBuilder();
-            builder.append("select COUNT(*) from messages where is_read = false AND messages.id_outcoming_account != '").append(idAccount).append("' and (");
+                Statement stmt = connection.createStatement();
+                StringBuilder builder = new StringBuilder();
+                builder.append("select COUNT(*) from messages where is_read = false AND messages.id_outcoming_account != '").append(idAccount).append("' and (");
 
-            boolean first = true;
-            for (Dialog aList : list) {
-                if (first){
-                    builder.append(" messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
-                    first =false;
-                }else{
-                    builder.append(" OR messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
+                boolean first = true;
+                for (Dialog aList : list) {
+                    if (first){
+                        builder.append(" messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
+                        first =false;
+                    }else{
+                        builder.append(" OR messages.id_dialog = '").append(aList.getIdDialog()).append("' ");
+                    }
                 }
+                builder.append(");");
+                log.sendToConsoleMessage("#INFO [SelectQueryDB][getCountUnreadMessages] query: "+builder.toString());
+                PreparedStatement select = connection.prepareStatement(builder.toString());
+                ResultSet result = select.executeQuery();
+                while (result.next()) {
+                    count = result.getInt("COUNT(*)");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            builder.append(");");
-            PreparedStatement select = connection.prepareStatement(builder.toString());
-            ResultSet result = select.executeQuery();
-            while (result.next()) {
-                count = result.getInt("COUNT(*)");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }else{
+            log.sendToConsoleMessage("#INFO [SelectQueryDB][getCountUnreadMessages] dialog is null or empty!");
         }
+
         dataBaseService.putback(connection);
         dataBaseService.getAvailableConnections();
         return count;
