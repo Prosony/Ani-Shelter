@@ -70,8 +70,7 @@ public class FileService {
             int total = 0;
             int nRead = 0;
             while((nRead = inputStream.read(buffer)) != -1) {
-
-                System.out.println(new String(buffer));
+//                System.out.println(new String(buffer));
                 total += nRead;
             }
             inputStream.close();

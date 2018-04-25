@@ -530,16 +530,27 @@ public class SelectQueryDB {
         }
         JsonArray ownTags = tags.get("own_tags").getAsJsonArray();
         if (!ownTags.toString().equals("[]")){//TODO rewrite this shit
-            log.sendToConsoleMessage("#INFO CLASS[SelectQueryDB] METHOD[buildQuery] !ownTags.isJsonNull()");
             for (int index= 0; index < ownTags.size(); index++){
                 if (first){
-                    builder.append("UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',").append(ownTags.get(index)).append(",'%')) ");
+                    if(ownTags.get(index).getAsString().substring(0,1).equalsIgnoreCase("-")){
+                        String tag = ownTags.get(index).getAsString().substring(1);
+                        builder.append("UPPER(post_ad.json_tags->'$[0].own_tags[*]') not like UPPER(CONCAT('%',\"").append(tag).append("\",'%')) ");
+                    }else{
+                        builder.append("UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',\"").append(ownTags.get(index).getAsString()).append("\",'%')) ");
+                    }
                     first = false;
                 }else {
-                    builder.append("and UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',").append(ownTags.get(index)).append(",'%')) ");
+                    if(ownTags.get(index).getAsString().substring(0,1).equals("-")){
+                        String tag = ownTags.get(index).getAsString().substring(1);
+                        builder.append("and UPPER(post_ad.json_tags->'$[0].own_tags[*]') not like UPPER(CONCAT('%',\"").append(tag).append("\",'%')) ");
+                    }else{
+                        builder.append("and UPPER(post_ad.json_tags->'$[0].own_tags[*]') like UPPER(CONCAT('%',\"").append(ownTags.get(index).getAsString()).append("\",'%')) ");
+                    }
                 }
             }
             all = false;
+        }else{
+            log.sendToConsoleMessage("#WARNING [SelectQueryDB][buildQuery] ownTags is null or empty!");
         }
         if (all){
             return "select * from post_ad;";
