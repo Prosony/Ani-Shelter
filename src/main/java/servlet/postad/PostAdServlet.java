@@ -5,8 +5,8 @@ package servlet.postad;
  * @since 0.2.6
  */
 import com.google.gson.Gson;
-import memcach.JsonWebTokenCache;
-import memcach.PostAdCache;
+import memcache.JsonWebTokenCache;
+import memcache.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;

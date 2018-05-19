@@ -1,10 +1,10 @@
-package memcach;
+package memcache;
 /**
  * @author Prosony
  * @since 0.2.7
  */
 import model.account.Account;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

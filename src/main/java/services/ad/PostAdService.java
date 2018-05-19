@@ -5,7 +5,7 @@ package services.ad;
  * @since 0.0.1
  */
 import com.google.gson.Gson;
-import memcach.PostAdCache;
+import memcache.PostAdCache;
 import model.ad.PostAd;
 import model.favorites.Favorites;
 import test.TestLog;

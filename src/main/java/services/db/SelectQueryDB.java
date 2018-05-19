@@ -3,7 +3,7 @@ package services.db;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import memcach.AccountCache;
+import memcache.AccountCache;
 import model.account.Account;
 import model.ad.PostAd;
 import model.message.Dialog;
@@ -17,7 +17,6 @@ import test.TestLog;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -553,9 +552,9 @@ public class SelectQueryDB {
             log.sendToConsoleMessage("#WARNING [SelectQueryDB][buildQuery] ownTags is null or empty!");
         }
         if (all){
-            return "select * from post_ad;";
+            return "select * from post_ad order by post_ad.timestamp;";
         }else{
-            builder.append(";");
+            builder.append(" order by post_ad.timestamp;");
             return builder.toString();
         }
     }

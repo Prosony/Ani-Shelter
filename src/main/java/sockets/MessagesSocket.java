@@ -3,8 +3,8 @@ package sockets;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import memcach.JsonWebTokenCache;
-import memcach.SocketCache;
+import memcache.JsonWebTokenCache;
+import memcache.SocketCache;
 import model.account.Account;
 import sockets.service_socket.SocketHandler;
 import test.TestLog;

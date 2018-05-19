@@ -1,6 +1,5 @@
-package memcach;
+package memcache;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

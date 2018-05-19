@@ -1,7 +1,7 @@
 package sockets.service_socket;
 
 import com.google.gson.JsonObject;
-import memcach.SocketCache;
+import memcache.SocketCache;
 import model.message.Dialog;
 import model.message.Messages;
 import services.db.InsertQueryDB;

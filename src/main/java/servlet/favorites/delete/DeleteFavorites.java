@@ -3,8 +3,8 @@ package servlet.favorites.delete;
  * @author Prosony
  * @since 0.0.1
  */
-import memcach.FavoritesCache;
-import memcach.JsonWebTokenCache;
+import memcache.FavoritesCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import model.favorites.Favorites;
 import org.json.simple.JSONObject;

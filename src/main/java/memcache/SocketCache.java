@@ -1,4 +1,4 @@
-package memcach;
+package memcache;
 
 import javax.websocket.Session;
 import java.util.ArrayList;

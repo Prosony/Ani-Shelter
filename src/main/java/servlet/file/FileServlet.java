@@ -2,7 +2,7 @@ package servlet.file;
 
 
 import com.google.gson.*;
-import memcach.FileCache;
+import memcache.FileCache;
 import org.json.simple.JSONArray;
 import services.FileService;
 import services.other.OtherService;

@@ -10,8 +10,7 @@ import java.security.Key;
 
 import com.google.gson.JsonObject;
 import io.jsonwebtoken.*;
-import memcach.JsonWebTokenCache;
-import model.account.Account;
+import memcache.JsonWebTokenCache;
 import test.TestLog;
 
 import java.util.Date;

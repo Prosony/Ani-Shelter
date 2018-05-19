@@ -5,8 +5,8 @@ package servlet.profile;
  */
 import com.google.gson.*;
 
-import memcach.AccountCache;
-import memcach.JsonWebTokenCache;
+import memcache.AccountCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import model.profile.Profile;
 import org.json.simple.JSONObject;

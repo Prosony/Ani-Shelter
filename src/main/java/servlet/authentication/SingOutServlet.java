@@ -3,7 +3,7 @@ package servlet.authentication;
  * @author Prosony
  * @since 0.0.1
  */
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import services.json.JsonHandler;
 import services.other.OtherService;
 import test.TestLog;

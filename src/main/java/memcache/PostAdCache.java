@@ -1,4 +1,4 @@
-package memcach;
+package memcache;
 /**
  * Simple service for ad post
  * @author Prosony
