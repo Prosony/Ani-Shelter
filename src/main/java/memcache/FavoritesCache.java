@@ -1,4 +1,4 @@
-package memcach;
+package memcache;
 /**
  * @author Prosony
  * @since 0.0.1

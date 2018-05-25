@@ -4,8 +4,8 @@ package servlet.people;
  * @since 0.0.1
  */
 import com.google.gson.Gson;
-import memcach.JsonWebTokenCache;
-import memcach.PostAdCache;
+import memcache.JsonWebTokenCache;
+import memcache.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;

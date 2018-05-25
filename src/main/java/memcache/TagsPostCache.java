@@ -1,4 +1,4 @@
-package memcach;
+package memcache;
 
 import model.tags.Tags;
 

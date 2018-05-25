@@ -3,7 +3,7 @@ package servlet.postad;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;

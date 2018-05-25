@@ -1,6 +1,6 @@
 package servlet.tags;
 
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
 import services.db.SelectQueryDB;

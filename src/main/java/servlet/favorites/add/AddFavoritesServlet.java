@@ -4,9 +4,9 @@ package servlet.favorites.add;
  * @author Prosony
  * @since 0.0.1
  */
-import memcach.FavoritesCache;
-import memcach.JsonWebTokenCache;
-import memcach.PostAdCache;
+import memcache.FavoritesCache;
+import memcache.JsonWebTokenCache;
+import memcache.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import model.favorites.Favorites;

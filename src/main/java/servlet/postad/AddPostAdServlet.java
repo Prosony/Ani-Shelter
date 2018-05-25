@@ -6,7 +6,7 @@ package servlet.postad;
  */
 
 import com.google.gson.*;
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import org.json.simple.JSONObject;
 import services.FileService;

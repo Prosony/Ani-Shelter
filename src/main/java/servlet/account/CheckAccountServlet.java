@@ -1,9 +1,8 @@
 package servlet.account;
 
 import com.google.gson.Gson;
-import memcach.AccountCache;
+import memcache.AccountCache;
 import model.account.Account;
-import org.json.simple.JSONObject;
 import services.json.JsonHandler;
 import services.other.OtherService;
 

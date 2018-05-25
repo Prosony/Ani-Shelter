@@ -4,7 +4,7 @@ package servlet.authentication;
  * @since 0.0.1
  */
 import com.google.gson.Gson;
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import model.callback.AccountCallBack;
 import org.json.simple.JSONObject;
 import services.*;

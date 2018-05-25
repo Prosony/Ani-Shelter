@@ -3,7 +3,7 @@ package services.db;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import memcach.AccountCache;
+import memcache.AccountCache;
 import model.account.Account;
 import model.ad.PostAd;
 import model.message.Dialog;
@@ -17,7 +17,6 @@ import test.TestLog;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -142,10 +141,10 @@ public class SelectQueryDB {
             ResultSet data;
             data = select.executeQuery();
             while (data.next()) {
-                jsonTag =data.getString("json_tag");
+                jsonTag = new String(data.getBytes("json_tag"), "UTF-8");
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         dataBaseService.putback(connection);
@@ -553,9 +552,15 @@ public class SelectQueryDB {
             log.sendToConsoleMessage("#WARNING [SelectQueryDB][buildQuery] ownTags is null or empty!");
         }
         if (all){
-            return "select * from post_ad;";
+<<<<<<< HEAD
+            return "select * from post_ad order by post_ad.timestamp desc;";
         }else{
-            builder.append(";");
+            builder.append(" order by post_ad.timestamp desc;");
+=======
+            return "select * from post_ad order by post_ad.timestamp;";
+        }else{
+            builder.append(" order by post_ad.timestamp;");
+>>>>>>> ad1a34db9a494e21bd67fdb8cdf92f8ed5756c54
             return builder.toString();
         }
     }

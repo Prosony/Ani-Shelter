@@ -4,11 +4,8 @@ package services.favorites;
  * @since 0.0.1
  */
 
-import memcach.PostAdCache;
+import memcache.PostAdCache;
 import test.TestLog;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 public class FavoritesService {
 

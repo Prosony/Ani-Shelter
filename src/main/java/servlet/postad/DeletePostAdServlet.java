@@ -4,8 +4,8 @@ package servlet.postad;
  * @author Prosony
  * @since 0.2.7.2
  */
-import memcach.JsonWebTokenCache;
-import memcach.PostAdCache;
+import memcache.JsonWebTokenCache;
+import memcache.PostAdCache;
 import model.account.Account;
 import model.ad.PostAd;
 import org.json.simple.JSONObject;

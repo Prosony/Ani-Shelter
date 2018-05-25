@@ -1,7 +1,7 @@
 package servlet.messages;
 
 import com.google.gson.Gson;
-import memcach.JsonWebTokenCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import model.message.Dialog;
 import org.json.simple.JSONObject;

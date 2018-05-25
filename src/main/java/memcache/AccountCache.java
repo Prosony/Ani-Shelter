@@ -1,4 +1,4 @@
-package memcach;
+package memcache;
 
 /**
  * @author Prosony
@@ -8,7 +8,6 @@ package memcach;
 import model.account.Account;
 import model.profile.Profile;
 
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;

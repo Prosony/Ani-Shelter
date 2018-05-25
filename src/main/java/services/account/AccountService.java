@@ -3,7 +3,7 @@ package services.account;
  * @author Prosony
  * @since 0.0.1
  */
-import memcach.AccountCache;
+import memcache.AccountCache;
 import model.account.Account;
 import test.TestLog;
 

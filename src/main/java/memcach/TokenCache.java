@@ -4,21 +4,21 @@ package memcach;
  * @since 0.2.7
  */
 import model.account.Account;
-import java.util.HashMap;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class JsonWebTokenCache {
+public class TokenCache {
 
-    private static JsonWebTokenCache instance = new JsonWebTokenCache();
+    private static TokenCache instance = new TokenCache();
 
-    public static JsonWebTokenCache getInstance() {
+    public static TokenCache getInstance() {
         return instance;
     }
 
     private final Map<String, Account> mapOnlineAccount;
 
-    private JsonWebTokenCache() {
+    private TokenCache() {
         mapOnlineAccount = new ConcurrentHashMap<>();
     }
 

@@ -7,8 +7,8 @@ package servlet.favorites;
  */
 
 import com.google.gson.Gson;
-import memcach.FavoritesCache;
-import memcach.JsonWebTokenCache;
+import memcache.FavoritesCache;
+import memcache.JsonWebTokenCache;
 import model.account.Account;
 import model.ad.PostAd;
 import model.favorites.Favorites;
