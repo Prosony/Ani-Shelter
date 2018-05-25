@@ -553,9 +553,15 @@ public class SelectQueryDB {
         }
         if (all){
 <<<<<<< HEAD
+<<<<<<< HEAD
             return "select * from post_ad order by post_ad.timestamp desc;";
         }else{
             builder.append(" order by post_ad.timestamp desc;");
+=======
+            return "select * from post_ad order by post_ad.timestamp;";
+        }else{
+            builder.append(" order by post_ad.timestamp;");
+>>>>>>> ad1a34db9a494e21bd67fdb8cdf92f8ed5756c54
 =======
             return "select * from post_ad order by post_ad.timestamp;";
         }else{
