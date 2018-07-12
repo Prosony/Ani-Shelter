@@ -1,4 +1,4 @@
 web/resources/css/* linguist-vendored
 web/resources/js/* linguist-vendored
-*.js linguist-vendored=false
-*.css linguist-vendored=false
+*.js linguist-vendored=Java
+*.css linguist-vendored=Java
